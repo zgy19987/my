@@ -1,0 +1,3814 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>高中物理AI情境探究平台</title>
+    <script src="https://cdn.jsdelivr.net/npm/echarts@5.4.3/dist/echarts.min.js"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Microsoft YaHei', sans-serif;
+        }
+        
+        body {
+            background-color: #f5f7fa;
+            padding: 20px;
+            color: #333;
+            min-width: 1200px;
+        }
+        
+        .container {
+            max-width: 1800px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 12px;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.08);
+            overflow: hidden;
+        }
+        
+        header {
+            background: linear-gradient(135deg, #4b6cb7 0%, #182848 100%);
+            color: white;
+            padding: 25px 30px;
+            text-align: center;
+        }
+        
+        h1 {
+            font-size: 28px;
+            margin-bottom: 8px;
+        }
+        
+        .subtitle {
+            font-size: 16px;
+            opacity: 0.9;
+            font-weight: normal;
+        }
+        
+        .main-content {
+            display: grid;
+            grid-template-columns: 450px 1fr;
+            gap: 20px;
+            padding: 20px;
+        }
+        
+        .left-panel {
+            background-color: #f9fafc;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        
+        .right-panel {
+            display: grid;
+            grid-template-rows: auto 1fr;
+            gap: 20px;
+        }
+        
+        .motion-section {
+            display: grid;
+            grid-template-columns: 1fr 350px;
+            gap: 20px;
+        }
+        
+        .charts-section {
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 15px;
+        }
+        
+        .section {
+            background-color: white;
+            border-radius: 10px;
+            padding: 20px;
+            box-shadow: 0 3px 10px rgba(0, 0, 0, 0.05);
+        }
+        
+        .section-title {
+            font-size: 18px;
+            color: #2c3e50;
+            margin-bottom: 20px;
+            padding-bottom: 10px;
+            border-bottom: 2px solid #eaeef2;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .object-controls {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+        }
+        
+        .object-panel {
+            background-color: white;
+            padding: 15px;
+            border-radius: 8px;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.04);
+        }
+        
+        .object-title {
+            font-size: 16px;
+            font-weight: bold;
+            margin-bottom: 15px;
+            padding-bottom: 8px;
+            border-bottom: 1px solid #eee;
+            color: #2c3e50;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+        }
+        
+        .object-status {
+            font-size: 12px;
+            padding: 2px 8px;
+            border-radius: 10px;
+            font-weight: normal;
+        }
+        
+        .status-moving {
+            background-color: #2ecc71;
+            color: white;
+        }
+        
+        .status-stopped {
+            background-color: #e74c3c;
+            color: white;
+        }
+        
+        .status-braking {
+            background-color: #f39c12;
+            color: white;
+        }
+        
+        .object-a .object-title {
+            color: #3498db;
+        }
+        
+        .object-b .object-title {
+            color: #e74c3c;
+        }
+        
+        .control-group {
+            margin-bottom: 15px;
+        }
+        
+        .control-label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 14px;
+            color: #555;
+        }
+        
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        input[type="range"] {
+            flex: 1;
+            height: 6px;
+            border-radius: 3px;
+            background: #e0e0e0;
+            outline: none;
+            -webkit-appearance: none;
+        }
+        
+        .object-a input[type="range"]::-webkit-slider-thumb {
+            background-color: #3498db;
+        }
+        
+        .object-b input[type="range"]::-webkit-slider-thumb {
+            background-color: #e74c3c;
+        }
+        
+        input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            width: 18px;
+            height: 18px;
+            border-radius: 50%;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+        
+        .number-input-container {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        
+        .number-input {
+            width: 80px;
+            padding: 6px 8px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            font-size: 14px;
+            text-align: center;
+            background-color: white;
+        }
+        
+        .number-input:focus {
+            outline: none;
+            border-color: #4b6cb7;
+            box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.2);
+        }
+        
+        .input-buttons {
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+        }
+        
+        .input-btn {
+            width: 24px;
+            height: 18px;
+            border: 1px solid #ddd;
+            background-color: #f5f5f5;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            user-select: none;
+        }
+        
+        .input-btn:hover {
+            background-color: #e0e0e0;
+        }
+        
+        .input-btn:active {
+            background-color: #d0d0d0;
+        }
+        
+        .input-btn.up {
+            border-radius: 4px 4px 0 0;
+        }
+        
+        .input-btn.down {
+            border-radius: 0 0 4px 4px;
+        }
+        
+        .value-display {
+            min-width: 50px;
+            text-align: center;
+            font-weight: bold;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        
+        .buttons {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 20px;
+        }
+        
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 6px;
+            background-color: #4b6cb7;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 14px;
+            flex: 1;
+            min-width: 120px;
+        }
+        
+        button:hover {
+            background-color: #3a5795;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        button.reset {
+            background-color: #95a5a6;
+        }
+        
+        button.reset:hover {
+            background-color: #7f8c8d;
+        }
+        
+        button.play {
+            background-color: #2ecc71;
+        }
+        
+        button.play:hover {
+            background-color: #27ae60;
+        }
+        
+        button.pause {
+            background-color: #e67e22;
+        }
+        
+        button.pause:hover {
+            background-color: #d35400;
+        }
+        
+        button.secondary {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            padding: 8px 12px;
+            min-width: auto;
+        }
+        
+        button.secondary:hover {
+            background-color: #d5dbdb;
+        }
+        
+        .checkbox-group {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .checkbox-label {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+            font-size: 14px;
+            cursor: pointer;
+        }
+        
+        .checkbox-label input[type="checkbox"] {
+            width: 16px;
+            height: 16px;
+        }
+        
+        #motionCanvas {
+            width: 100%;
+            height: 300px;
+            border-radius: 8px;
+            background-color: #f8f9fa;
+            border: 1px solid #eaeef2;
+        }
+        
+        .special-moments {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border: 1px solid #eaeef2;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+        }
+        
+        .moment-list {
+            margin-top: 10px;
+            flex-grow: 1;
+            overflow-y: auto;
+        }
+        
+        .moment-item {
+            padding: 8px 12px;
+            margin-bottom: 8px;
+            background-color: white;
+            border-radius: 6px;
+            border-left: 4px solid #4b6cb7;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .moment-item:hover {
+            background-color: #e8f4fd;
+            transform: translateX(5px);
+        }
+        
+        .moment-item.active {
+            background-color: #d1ecf1;
+            border-left-color: #17a2b8;
+        }
+        
+        .moment-time {
+            font-weight: bold;
+            color: #2c3e50;
+            margin-bottom: 3px;
+            display: flex;
+            justify-content: space-between;
+        }
+        
+        .moment-description {
+            font-size: 13px;
+            color: #666;
+        }
+        
+        .chart-container {
+            height: 230px;
+            width: 100%;
+        }
+        
+        .info-panel {
+            padding: 15px;
+            background-color: #f8f9fa;
+            border-radius: 8px;
+            border-left: 4px solid #4b6cb7;
+        }
+        
+        .info-title {
+            font-weight: bold;
+            margin-bottom: 8px;
+            color: #2c3e50;
+            font-size: 16px;
+        }
+        
+        .info-content {
+            font-size: 14px;
+            color: #555;
+            line-height: 1.5;
+        }
+        
+        .real-time-data {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .data-item {
+            padding: 10px;
+            background-color: white;
+            border-radius: 6px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+        }
+        
+        .data-label {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-bottom: 4px;
+        }
+        
+        .data-value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #2c3e50;
+        }
+        
+        .critical-condition {
+            background-color: #fff9e6;
+            border-left-color: #f1c40f;
+            margin-top: 10px;
+            padding: 10px;
+            font-size: 14px;
+            color: #8e6c0a;
+        }
+        
+        .time-control {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-top: 20px;
+            padding-top: 15px;
+            border-top: 1px solid #eee;
+        }
+        
+        .time-label {
+            font-weight: bold;
+            color: #2c3e50;
+            white-space: nowrap;
+        }
+        
+        #timeSlider {
+            flex: 1;
+        }
+        
+        .current-time {
+            font-weight: bold;
+            color: #4b6cb7;
+            min-width: 70px;
+        }
+        
+        .preset-scenarios {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .preset-btn {
+            background-color: #ecf0f1;
+            color: #2c3e50;
+            padding: 8px;
+            font-size: 13px;
+            min-width: auto;
+        }
+        
+        .preset-btn:hover {
+            background-color: #d5dbdb;
+        }
+        
+        footer {
+            text-align: center;
+            padding: 15px;
+            font-size: 14px;
+            color: #7f8c8d;
+            border-top: 1px solid #eee;
+            background-color: #f9fafc;
+        }
+        
+        .velocity-display {
+            position: absolute;
+            font-size: 12px;
+            font-weight: bold;
+            color: white;
+            background-color: rgba(0,0,0,0.7);
+            padding: 2px 6px;
+            border-radius: 3px;
+            pointer-events: none;
+        }
+        
+        .legend {
+            display: flex;
+            gap: 15px;
+            margin-top: 10px;
+            font-size: 12px;
+            flex-wrap: wrap;
+        }
+        
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .legend-color {
+            width: 12px;
+            height: 12px;
+            border-radius: 2px;
+        }
+        
+        .brake-indicator {
+            position: absolute;
+            top: 5px;
+            right: 5px;
+            background-color: #e74c3c;
+            color: white;
+            padding: 2px 6px;
+            border-radius: 3px;
+            font-size: 10px;
+            font-weight: bold;
+        }
+        
+        .brake-light {
+            position: absolute;
+            width: 8px;
+            height: 8px;
+            border-radius: 50%;
+            background-color: #e74c3c;
+            animation: brakeLight 1s infinite alternate;
+        }
+        
+        @keyframes brakeLight {
+            from { opacity: 0.3; }
+            to { opacity: 1; }
+        }
+        
+        /* 多过程模式样式 */
+        .process-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        
+        .process-tabs {
+            display: flex;
+            gap: 5px;
+            overflow-x: auto;
+            padding-bottom: 5px;
+        }
+        
+        .process-tab {
+            padding: 8px 15px;
+            background-color: #ecf0f1;
+            border-radius: 6px;
+            cursor: pointer;
+            white-space: nowrap;
+            font-size: 14px;
+            transition: all 0.2s;
+        }
+        
+        .process-tab:hover {
+            background-color: #d5dbdb;
+        }
+        
+        .process-tab.active {
+            background-color: #4b6cb7;
+            color: white;
+        }
+        
+        .process-actions {
+            display: flex;
+            gap: 10px;
+            margin-top: 10px;
+        }
+        
+        .process-info {
+            font-size: 13px;
+            color: #7f8c8d;
+            margin-top: 10px;
+            padding: 10px;
+            background-color: #f8f9fa;
+            border-radius: 6px;
+        }
+        
+        .mode-switcher {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
+            background-color: #ecf0f1;
+            padding: 8px;
+            border-radius: 8px;
+        }
+        
+        .mode-btn {
+            flex: 1;
+            padding: 10px;
+            text-align: center;
+            background-color: #bdc3c7;
+            color: #2c3e50;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+        
+        .mode-btn.active {
+            background-color: #3498db;
+            color: white;
+        }
+        
+        .mode-btn:hover {
+            background-color: #95a5a6;
+        }
+        
+        .process-time {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 15px;
+        }
+        
+        .process-time-label {
+            font-size: 14px;
+            color: #2c3e50;
+            font-weight: bold;
+            white-space: nowrap;
+        }
+        
+        .process-duration {
+            flex: 1;
+        }
+        
+        .process-duration-display {
+            min-width: 60px;
+            text-align: center;
+            font-weight: bold;
+            color: #4b6cb7;
+        }
+        
+        .process-markers {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+        }
+        
+        .process-marker {
+            position: absolute;
+            top: 10px;
+            transform: translateX(-50%);
+            font-size: 12px;
+            color: #7f8c8d;
+            font-weight: bold;
+        }
+        
+        .process-marker-line {
+            position: absolute;
+            top: 30px;
+            bottom: 0;
+            width: 1px;
+            background-color: rgba(127, 140, 141, 0.3);
+        }
+        
+        @media (max-width: 1600px) {
+            body {
+                min-width: auto;
+            }
+            
+            .main-content {
+                grid-template-columns: 1fr;
+            }
+            
+            .charts-section {
+                grid-template-columns: 1fr 1fr;
+            }
+        }
+        
+        @media (max-width: 1200px) {
+            .charts-section {
+                grid-template-columns: 1fr;
+            }
+        }
+        
+        .initial-position-note {
+            font-size: 12px;
+            color: #7f8c8d;
+            margin-top: 5px;
+            font-style: italic;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>高中物理AI情境探究平台</h1>
+            <p class="subtitle">追及相遇问题动态生成系统</p>
+        </header>
+        
+        <div class="main-content">
+            <div class="left-panel">
+                <div class="mode-switcher">
+                    <div class="mode-btn active" id="singleModeBtn" onclick="switchMode('single')">
+                        单过程模式
+                    </div>
+                    <div class="mode-btn" id="multiModeBtn" onclick="switchMode('multi')">
+                        多过程模式
+                    </div>
+                </div>
+                
+                <!-- 单过程模式控制面板 -->
+                <div class="section" id="singleModePanel">
+                    <h2 class="section-title">控制面板</h2>
+                    
+                    <div class="object-controls">
+                        <div class="object-panel object-a">
+                            <div class="object-title">
+                                🚗 物体A (蓝色)
+                                <span id="statusA" class="object-status status-moving">运动</span>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">初始位置 x₀ (m):</label>
+                                <div class="number-input-container">
+                                    <input type="number" id="x0AInput" class="number-input" min="-50" max="100" value="0" step="1">
+                                    <div class="input-buttons">
+                                        <div class="input-btn up" onclick="changeValue('x0A', 1)">+</div>
+                                        <div class="input-btn down" onclick="changeValue('x0A', -1)">-</div>
+                                    </div>
+                                </div>
+                                <input type="range" id="x0A" min="-50" max="100" value="0" step="1">
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">初速度 v₀ (m/s):</label>
+                                <div class="number-input-container">
+                                    <input type="number" id="v0AInput" class="number-input" min="0" max="30" value="10" step="0.5">
+                                    <div class="input-buttons">
+                                        <div class="input-btn up" onclick="changeValue('v0A', 0.5)">+</div>
+                                        <div class="input-btn down" onclick="changeValue('v0A', -0.5)">-</div>
+                                    </div>
+                                </div>
+                                <input type="range" id="v0A" min="0" max="30" value="10" step="0.5">
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">加速度 a (m/s²):</label>
+                                <div class="number-input-container">
+                                    <input type="number" id="aAInput" class="number-input" min="-5" max="5" value="0" step="0.1">
+                                    <div class="input-buttons">
+                                        <div class="input-btn up" onclick="changeValue('aA', 0.1)">+</div>
+                                        <div class="input-btn down" onclick="changeValue('aA', -0.1)">-</div>
+                                    </div>
+                                </div>
+                                <input type="range" id="aA" min="-5" max="5" value="0" step="0.1">
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">刹车模式:</label>
+                                <div class="checkbox-label">
+                                    <input type="checkbox" id="brakeA"> 启用刹车（速度减为0即停止）
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="object-panel object-b">
+                            <div class="object-title">
+                                🚙 物体B (红色)
+                                <span id="statusB" class="object-status status-moving">运动</span>
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">初始位置 x₀ (m):</label>
+                                <div class="number-input-container">
+                                    <input type="number" id="x0BInput" class="number-input" min="-50" max="100" value="30" step="1">
+                                    <div class="input-buttons">
+                                        <div class="input-btn up" onclick="changeValue('x0B', 1)">+</div>
+                                        <div class="input-btn down" onclick="changeValue('x0B', -1)">-</div>
+                                    </div>
+                                </div>
+                                <input type="range" id="x0B" min="-50" max="100" value="30" step="1">
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">初速度 v₀ (m/s):</label>
+                                <div class="number-input-container">
+                                    <input type="number" id="v0BInput" class="number-input" min="0" max="30" value="5" step="0.5">
+                                    <div class="input-buttons">
+                                        <div class="input-btn up" onclick="changeValue('v0B', 0.5)">+</div>
+                                        <div class="input-btn down" onclick="changeValue('v0B', -0.5)">-</div>
+                                    </div>
+                                </div>
+                                <input type="range" id="v0B" min="0" max="30" value="5" step="0.5">
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">加速度 a (m/s²):</label>
+                                <div class="number-input-container">
+                                    <input type="number" id="aBInput" class="number-input" min="-5" max="5" value="0" step="0.1">
+                                    <div class="input-buttons">
+                                        <div class="input-btn up" onclick="changeValue('aB', 0.1)">+</div>
+                                        <div class="input-btn down" onclick="changeValue('aB', -0.1)">-</div>
+                                    </div>
+                                </div>
+                                <input type="range" id="aB" min="-5" max="5" value="0" step="0.1">
+                            </div>
+                            
+                            <div class="control-group">
+                                <label class="control-label">刹车模式:</label>
+                                <div class="checkbox-label">
+                                    <input type="checkbox" id="brakeB"> 启用刹车（速度减为0即停止）
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="time-control">
+                        <div class="time-label">时间 t (s):</div>
+                        <input type="range" id="timeSlider" min="0" max="20" value="0" step="0.1">
+                        <div class="number-input-container" style="min-width: 100px;">
+                            <input type="number" id="timeInput" class="number-input" min="0" max="20" value="0" step="0.1">
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 多过程模式控制面板 -->
+                <div class="section" id="multiModePanel" style="display: none;">
+                    <h2 class="section-title">
+                        多过程控制面板
+                        <span style="font-size: 12px; color: #7f8c8d;">当前过程: <span id="currentProcessIndex">1</span>/<span id="totalProcesses">1</span></span>
+                    </h2>
+                    
+                    <div class="process-controls">
+                        <div class="process-tabs" id="processTabs">
+                            <div class="process-tab active" onclick="switchProcess(0)">过程 1</div>
+                        </div>
+                        
+                        <div class="process-time">
+                            <div class="process-time-label">持续时间:</div>
+                            <input type="range" id="processDuration" min="1" max="20" value="10" step="0.5" class="process-duration">
+                            <div class="number-input-container" style="min-width: 80px;">
+                                <input type="number" id="processDurationInput" class="number-input" min="1" max="20" value="10" step="0.5">
+                                <span style="font-size: 12px; color: #7f8c8d;">s</span>
+                            </div>
+                        </div>
+                        
+                        <div class="object-controls">
+                            <div class="object-panel object-a">
+                                <div class="object-title">
+                                    🚗 物体A (蓝色)
+                                </div>
+                                
+                                <!-- 初始位置（仅过程1显示） -->
+                                <div class="control-group" id="multiX0AGroup">
+                                    <label class="control-label">初始位置 x₀ (m):</label>
+                                    <div class="number-input-container">
+                                        <input type="number" id="multiX0AInput" class="number-input" min="-50" max="100" value="0" step="1">
+                                        <div class="input-buttons">
+                                            <div class="input-btn up" onclick="changeMultiValue('x0A', 1)">+</div>
+                                            <div class="input-btn down" onclick="changeMultiValue('x0A', -1)">-</div>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="multiX0A" min="-50" max="100" value="0" step="1">
+                                    <div class="initial-position-note" id="multiX0ANote">仅过程1可设置初始位置</div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">初速度 v₀ (m/s):</label>
+                                    <div class="number-input-container">
+                                        <input type="number" id="multiV0AInput" class="number-input" min="0" max="30" value="10" step="0.5">
+                                        <div class="input-buttons">
+                                            <div class="input-btn up" onclick="changeMultiValue('v0A', 0.5)">+</div>
+                                            <div class="input-btn down" onclick="changeMultiValue('v0A', -0.5)">-</div>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="multiV0A" min="0" max="30" value="10" step="0.5">
+                                    <div class="initial-position-note" id="multiV0ANote">过程1的初速度，后续过程继承上一过程末速度</div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">加速度 a (m/s²):</label>
+                                    <div class="number-input-container">
+                                        <input type="number" id="multiAAInput" class="number-input" min="-5" max="5" value="0" step="0.1">
+                                        <div class="input-buttons">
+                                            <div class="input-btn up" onclick="changeMultiValue('aA', 0.1)">+</div>
+                                            <div class="input-btn down" onclick="changeMultiValue('aA', -0.1)">-</div>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="multiAA" min="-5" max="5" value="0" step="0.1">
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">刹车模式:</label>
+                                    <div class="checkbox-label">
+                                        <input type="checkbox" id="multiBrakeA"> 启用刹车（速度减为0即停止）
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="object-panel object-b">
+                                <div class="object-title">
+                                    🚙 物体B (红色)
+                                </div>
+                                
+                                <!-- 初始位置（仅过程1显示） -->
+                                <div class="control-group" id="multiX0BGroup">
+                                    <label class="control-label">初始位置 x₀ (m):</label>
+                                    <div class="number-input-container">
+                                        <input type="number" id="multiX0BInput" class="number-input" min="-50" max="100" value="30" step="1">
+                                        <div class="input-buttons">
+                                            <div class="input-btn up" onclick="changeMultiValue('x0B', 1)">+</div>
+                                            <div class="input-btn down" onclick="changeMultiValue('x0B', -1)">-</div>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="multiX0B" min="-50" max="100" value="30" step="1">
+                                    <div class="initial-position-note" id="multiX0BNote">仅过程1可设置初始位置</div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">初速度 v₀ (m/s):</label>
+                                    <div class="number-input-container">
+                                        <input type="number" id="multiV0BInput" class="number-input" min="0" max="30" value="5" step="0.5">
+                                        <div class="input-buttons">
+                                            <div class="input-btn up" onclick="changeMultiValue('v0B', 0.5)">+</div>
+                                            <div class="input-btn down" onclick="changeMultiValue('v0B', -0.5)">-</div>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="multiV0B" min="0" max="30" value="5" step="0.5">
+                                    <div class="initial-position-note" id="multiV0BNote">过程1的初速度，后续过程继承上一过程末速度</div>
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">加速度 a (m/s²):</label>
+                                    <div class="number-input-container">
+                                        <input type="number" id="multiABInput" class="number-input" min="-5" max="5" value="0" step="0.1">
+                                        <div class="input-buttons">
+                                            <div class="input-btn up" onclick="changeMultiValue('aB', 0.1)">+</div>
+                                            <div class="input-btn down" onclick="changeMultiValue('aB', -0.1)">-</div>
+                                        </div>
+                                    </div>
+                                    <input type="range" id="multiAB" min="-5" max="5" value="0" step="0.1">
+                                </div>
+                                
+                                <div class="control-group">
+                                    <label class="control-label">刹车模式:</label>
+                                    <div class="checkbox-label">
+                                        <input type="checkbox" id="multiBrakeB"> 启用刹车（速度减为0即停止）
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        
+                        <div class="process-actions">
+                            <button class="secondary" onclick="addProcess()">+ 添加过程</button>
+                            <button class="secondary" onclick="removeProcess()" id="removeProcessBtn" disabled>- 删除过程</button>
+                            <button class="secondary" onclick="resetMultiProcess()">↺ 重置所有</button>
+                        </div>
+                        
+                        <div class="process-info">
+                            <strong>多过程模式说明:</strong><br>
+                            1. 每个过程有独立的运动参数和持续时间<br>
+                            2. 过程1可设置初始位置和初速度，后续过程继承上一个过程的末状态<br>
+                            3. 总运动时间 = 所有过程持续时间之和<br>
+                            4. 可以添加最多5个过程
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="info-panel">
+                    <div class="info-title">📊 实时数据</div>
+                    <div class="real-time-data">
+                        <div class="data-item">
+                            <div class="data-label">两车距离</div>
+                            <div id="distanceValue" class="data-value">30.0 m</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">相对速度</div>
+                            <div id="relativeSpeedValue" class="data-value">5.0 m/s</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">A车速度</div>
+                            <div id="velocityAValue" class="data-value">10.0 m/s</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">B车速度</div>
+                            <div id="velocityBValue" class="data-value">5.0 m/s</div>
+                        </div>
+                    </div>
+                    
+                    <div class="real-time-data" style="margin-top: 10px;">
+                        <div class="data-item">
+                            <div class="data-label">A车位移</div>
+                            <div id="displacementAValue" class="data-value">0.0 m</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">B车位移</div>
+                            <div id="displacementBValue" class="data-value">0.0 m</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">A车运动时间</div>
+                            <div id="movementTimeAValue" class="data-value">0.0 s</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">B车运动时间</div>
+                            <div id="movementTimeBValue" class="data-value">0.0 s</div>
+                        </div>
+                    </div>
+                    
+                    <div class="real-time-data" style="margin-top: 10px;">
+                        <div class="data-item">
+                            <div class="data-label">A车加速度</div>
+                            <div id="accelerationAValue" class="data-value">0.0 m/s²</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">B车加速度</div>
+                            <div id="accelerationBValue" class="data-value">0.0 m/s²</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">当前过程</div>
+                            <div id="currentProcessValue" class="data-value">1</div>
+                        </div>
+                        <div class="data-item">
+                            <div class="data-label">过程时间</div>
+                            <div id="processTimeValue" class="data-value">0.0 s</div>
+                        </div>
+                    </div>
+                    
+                    <div id="criticalInfo" class="critical-condition" style="display: none; margin-top: 15px;">
+                        ⚠ <span id="criticalText"></span>
+                    </div>
+                </div>
+                
+                <div class="section">
+                    <h2 class="section-title">控制按钮</h2>
+                    <div class="buttons">
+                        <button id="playBtn" class="play">▶ 播放</button>
+                        <button id="pauseBtn" class="pause" disabled>⏸ 暂停</button>
+                        <button id="resetBtn" class="reset">↺ 重置</button>
+                        <button id="toStartBtn" class="secondary">⏮ 回到起点</button>
+                        <button id="randomBtn">🎲 随机生成</button>
+                    </div>
+                    
+                    <div class="checkbox-group">
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showAllMoments" checked> 显示关键时刻
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showVelocity" checked> 显示实时速度
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showTrajectory" checked> 显示运动轨迹
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showStopPosition" checked> 显示停车位置
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showBrakeLight" checked> 显示刹车灯
+                        </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showProcessMarkers" checked> 显示过程标记
+                        </label>
+                    </div>
+                    
+                    <div class="preset-scenarios">
+                        <h3 style="grid-column: span 2; margin-top: 15px; color: #2c3e50; font-size: 16px;">预设场景</h3>
+                        <button class="preset-btn" onclick="setPreset('chase')">匀速追匀速</button>
+                        <button class="preset-btn" onclick="setPreset('accelerateChase')">匀加速追匀速</button>
+                        <button class="preset-btn" onclick="setPreset('decelerateChase')">匀减速追匀速</button>
+                        <button class="preset-btn" onclick="setPreset('rearBrake')">后车刹车问题</button>
+                        <button class="preset-btn" onclick="setPreset('bothBrake')">两车同时刹车</button>
+                        <button class="preset-btn" onclick="setPreset('cannotCatch')">永远追不上</button>
+                        <button class="preset-btn" onclick="setPreset('meetAfterBrake')">刹车后相遇</button>
+                        <button class="preset-btn" onclick="setPreset('multiProcessDemo')">多过程演示</button>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="right-panel">
+                <div class="motion-section">
+                    <div class="section">
+                        <h2 class="section-title">
+                            🚀 运动过程视图
+                            <div class="legend">
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #3498db;"></div>
+                                    <span>物体A</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #e74c3c;"></div>
+                                    <span>物体B</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #2ecc71;"></div>
+                                    <span>初始时刻</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #9b59b6;"></div>
+                                    <span>相遇时刻</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #f1c40f;"></div>
+                                    <span>距离极值</span>
+                                </div>
+                                <div class="legend-item">
+                                    <div class="legend-color" style="background-color: #e74c3c;"></div>
+                                    <span>停车时刻</span>
+                                </div>
+                            </div>
+                        </h2>
+                        <div style="position: relative;">
+                            <canvas id="motionCanvas" width="800" height="300"></canvas>
+                            <div id="processMarkers" class="process-markers"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="special-moments">
+                        <h2 class="section-title">⏰ 关键时刻</h2>
+                        <div id="momentsList" class="moment-list">
+                            <!-- 关键时刻列表会动态生成 -->
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="charts-section">
+                    <div class="section">
+                        <h2 class="section-title">📈 位移-时间图 (s-t)</h2>
+                        <div id="sChart" class="chart-container"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2 class="section-title">📊 速度-时间图 (v-t)</h2>
+                        <div id="vChart" class="chart-container"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2 class="section-title">📉 加速度-时间图 (a-t)</h2>
+                        <div id="aChart" class="chart-container"></div>
+                    </div>
+                    
+                    <div class="section">
+                        <h2 class="section-title">📏 距离-时间图 (d-t)</h2>
+                        <div id="dChart" class="chart-container"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <footer>
+            <p>© 2025 高中物理教学工具 - 多过程追及相遇与刹车问题模拟器</p>
+            <p>设计原理: x = x₀ + v₀·t + ½·a·t² (当v≥0) | 刹车模式: 速度减为0即停止运动 | 支持单过程和多过程模式</p>
+        </footer>
+    </div>
+
+    <script>
+        // ==================== 全局变量与数据结构 ====================
+        // 单过程模式参数
+        let singleParams = {
+            x0A: 0,    // A初始位置 (m)
+            v0A: 10,   // A初速度 (m/s)
+            aA: 0,     // A加速度 (m/s²)
+            x0B: 30,   // B初始位置 (m)
+            v0B: 5,    // B初速度 (m/s)
+            aB: 0,     // B加速度 (m/s²)
+            t: 0,      // 当前时间 (s)
+            maxT: 20   // 最大时间 (s)
+        };
+        
+        // 多过程模式数据结构
+        let multiProcesses = [
+            {
+                duration: 10,     // 过程持续时间 (s)
+                params: {
+                    x0A: 0,       // A初始位置 (m) - 仅过程1有效
+                    x0B: 30,      // B初始位置 (m) - 仅过程1有效
+                    v0A: 10,      // A初速度 (m/s)
+                    aA: 0,        // A加速度 (m/s²)
+                    v0B: 5,       // B初速度 (m/s)
+                    aB: 0,        // B加速度 (m/s²)
+                    brakeA: false, // A刹车模式
+                    brakeB: false  // B刹车模式
+                }
+            }
+        ];
+        
+        let currentProcessIndex = 0; // 当前编辑的过程索引
+        let currentMode = 'single'; // 当前模式: 'single' 或 'multi'
+        
+        // 物体状态
+        let objectStates = {
+            A: { isMoving: true, stopTime: null, stopPosition: null, movementTime: 0 },
+            B: { isMoving: true, stopTime: null, stopPosition: null, movementTime: 0 }
+        };
+        
+        // 过程状态
+        let processStates = []; // 每个过程的开始时间、结束时间、状态
+        
+        // 动画控制
+        let animationId = null;
+        let isPlaying = false;
+        let animationSpeed = 1.0;
+        let lastTimestamp = 0;
+        
+        // 关键时刻数据
+        let specialMoments = [];
+        
+        // ==================== DOM元素 ====================
+        const canvas = document.getElementById('motionCanvas');
+        const ctx = canvas.getContext('2d');
+        
+        // 模式切换
+        const singleModeBtn = document.getElementById('singleModeBtn');
+        const multiModeBtn = document.getElementById('multiModeBtn');
+        const singleModePanel = document.getElementById('singleModePanel');
+        const multiModePanel = document.getElementById('multiModePanel');
+        
+        // 单过程输入控件
+        const singleInputs = {
+            x0A: document.getElementById('x0AInput'),
+            v0A: document.getElementById('v0AInput'),
+            aA: document.getElementById('aAInput'),
+            x0B: document.getElementById('x0BInput'),
+            v0B: document.getElementById('v0BInput'),
+            aB: document.getElementById('aBInput'),
+            time: document.getElementById('timeInput')
+        };
+        
+        const singleSliders = {
+            x0A: document.getElementById('x0A'),
+            v0A: document.getElementById('v0A'),
+            aA: document.getElementById('aA'),
+            x0B: document.getElementById('x0B'),
+            v0B: document.getElementById('v0B'),
+            aB: document.getElementById('aB'),
+            time: document.getElementById('timeSlider')
+        };
+        
+        // 多过程输入控件
+        const multiInputs = {
+            x0A: document.getElementById('multiX0AInput'),
+            v0A: document.getElementById('multiV0AInput'),
+            aA: document.getElementById('multiAAInput'),
+            x0B: document.getElementById('multiX0BInput'),
+            v0B: document.getElementById('multiV0BInput'),
+            aB: document.getElementById('multiABInput'),
+            duration: document.getElementById('processDurationInput')
+        };
+        
+        const multiSliders = {
+            x0A: document.getElementById('multiX0A'),
+            v0A: document.getElementById('multiV0A'),
+            aA: document.getElementById('multiAA'),
+            x0B: document.getElementById('multiX0B'),
+            v0B: document.getElementById('multiV0B'),
+            aB: document.getElementById('multiAB'),
+            duration: document.getElementById('processDuration')
+        };
+        
+        // 多过程元素
+        const processTabs = document.getElementById('processTabs');
+        const currentProcessIndexSpan = document.getElementById('currentProcessIndex');
+        const totalProcessesSpan = document.getElementById('totalProcesses');
+        const removeProcessBtn = document.getElementById('removeProcessBtn');
+        
+        // 复选框
+        const brakeA = document.getElementById('brakeA');
+        const brakeB = document.getElementById('brakeB');
+        const multiBrakeA = document.getElementById('multiBrakeA');
+        const multiBrakeB = document.getElementById('multiBrakeB');
+        
+        // 按钮
+        const playBtn = document.getElementById('playBtn');
+        const pauseBtn = document.getElementById('pauseBtn');
+        const resetBtn = document.getElementById('resetBtn');
+        const toStartBtn = document.getElementById('toStartBtn');
+        const randomBtn = document.getElementById('randomBtn');
+        
+        // 状态显示
+        const statusA = document.getElementById('statusA');
+        const statusB = document.getElementById('statusB');
+        
+        // 关键时刻列表
+        const momentsList = document.getElementById('momentsList');
+        
+        // 过程标记容器
+        const processMarkers = document.getElementById('processMarkers');
+        
+        // 图表实例
+        let sChart, vChart, aChart, dChart;
+        
+        // ==================== 初始化函数 ====================
+        
+        function init() {
+            console.log("初始化...");
+            
+            // 绑定事件
+            bindEvents();
+            
+            // 初始化图表
+            initCharts();
+            
+            // 重置所有数据
+            resetAnimation();
+            
+            console.log("初始化完成");
+        }
+        
+        // ==================== 模式切换函数 ====================
+        
+        function switchMode(mode) {
+            currentMode = mode;
+            
+            // 更新按钮状态
+            singleModeBtn.classList.toggle('active', mode === 'single');
+            multiModeBtn.classList.toggle('active', mode === 'multi');
+            
+            // 更新面板显示
+            singleModePanel.style.display = mode === 'single' ? 'block' : 'none';
+            multiModePanel.style.display = mode === 'multi' ? 'block' : 'none';
+            
+            // 停止动画
+            stopAnimation();
+            
+            // 重置时间
+            if (mode === 'single') {
+                singleParams.t = 0;
+                singleSliders.time.value = 0;
+                singleInputs.time.value = '0';
+            } else {
+                // 对于多过程模式，重新计算过程状态
+                calculateProcessStates();
+            }
+            
+            // 重新计算关键时刻
+            calculateSpecialMoments();
+            
+            // 更新显示
+            drawMotion();
+            updateCharts();
+            updateInfoPanel();
+            updateMomentsList();
+        }
+        
+        // ==================== 多过程管理函数 ====================
+        
+        // 切换当前编辑的过程
+        function switchProcess(index) {
+            currentProcessIndex = index;
+            
+            // 更新标签页状态
+            document.querySelectorAll('.process-tab').forEach((tab, i) => {
+                tab.classList.toggle('active', i === index);
+            });
+            
+            // 更新显示
+            currentProcessIndexSpan.textContent = index + 1;
+            
+            // 更新输入控件
+            updateMultiProcessControls();
+            
+            // 更新删除按钮状态
+            removeProcessBtn.disabled = multiProcesses.length <= 1;
+        }
+        
+        // 添加过程
+        function addProcess() {
+            if (multiProcesses.length >= 5) {
+                alert("最多只能添加5个过程");
+                return;
+            }
+            
+            // 添加新过程，参数继承上一个过程
+            const lastProcess = multiProcesses[multiProcesses.length - 1];
+            multiProcesses.push({
+                duration: 5, // 默认持续时间
+                params: {
+                    x0A: null, // 后续过程不需要初始位置
+                    x0B: null, // 后续过程不需要初始位置
+                    v0A: lastProcess.params.v0A,
+                    aA: lastProcess.params.aA,
+                    v0B: lastProcess.params.v0B,
+                    aB: lastProcess.params.aB,
+                    brakeA: lastProcess.params.brakeA,
+                    brakeB: lastProcess.params.brakeB
+                }
+            });
+            
+            // 更新界面
+            updateProcessTabs();
+            switchProcess(multiProcesses.length - 1);
+            
+            // 重新计算
+            calculateProcessStates();
+            calculateSpecialMoments();
+            drawMotion();
+            updateCharts();
+        }
+        
+        // 删除当前过程
+        function removeProcess() {
+            if (multiProcesses.length <= 1) return;
+            
+            multiProcesses.splice(currentProcessIndex, 1);
+            
+            // 调整当前索引
+            if (currentProcessIndex >= multiProcesses.length) {
+                currentProcessIndex = multiProcesses.length - 1;
+            }
+            
+            // 更新界面
+            updateProcessTabs();
+            switchProcess(currentProcessIndex);
+            
+            // 重新计算
+            calculateProcessStates();
+            calculateSpecialMoments();
+            drawMotion();
+            updateCharts();
+        }
+        
+        // 重置多过程
+        function resetMultiProcess() {
+            multiProcesses = [
+                {
+                    duration: 10,
+                    params: {
+                        x0A: 0,
+                        x0B: 30,
+                        v0A: 10,
+                        aA: 0,
+                        v0B: 5,
+                        aB: 0,
+                        brakeA: false,
+                        brakeB: false
+                    }
+                }
+            ];
+            
+            // 重置多过程输入控件
+            multiInputs.x0A.value = '0';
+            multiInputs.v0A.value = '10';
+            multiInputs.aA.value = '0';
+            multiInputs.x0B.value = '30';
+            multiInputs.v0B.value = '5';
+            multiInputs.aB.value = '0';
+            multiInputs.duration.value = '10';
+            
+            multiSliders.x0A.value = '0';
+            multiSliders.v0A.value = '10';
+            multiSliders.aA.value = '0';
+            multiSliders.x0B.value = '30';
+            multiSliders.v0B.value = '5';
+            multiSliders.aB.value = '0';
+            multiSliders.duration.value = '10';
+            
+            multiBrakeA.checked = false;
+            multiBrakeB.checked = false;
+            
+            // 更新界面
+            updateProcessTabs();
+            switchProcess(0);
+            
+            // 重新计算
+            calculateProcessStates();
+            calculateSpecialMoments();
+            drawMotion();
+            updateCharts();
+        }
+        
+        // 更新过程标签页
+        function updateProcessTabs() {
+            processTabs.innerHTML = '';
+            multiProcesses.forEach((process, index) => {
+                const tab = document.createElement('div');
+                tab.className = `process-tab ${index === currentProcessIndex ? 'active' : ''}`;
+                tab.textContent = `过程 ${index + 1}`;
+                tab.onclick = () => switchProcess(index);
+                processTabs.appendChild(tab);
+            });
+            
+            totalProcessesSpan.textContent = multiProcesses.length;
+        }
+        
+        // 更新多过程控制面板
+        function updateMultiProcessControls() {
+            const process = multiProcesses[currentProcessIndex];
+            
+            // 更新输入控件
+            if (currentProcessIndex === 0) {
+                // 过程1：显示初始位置
+                document.getElementById('multiX0AGroup').style.display = 'block';
+                document.getElementById('multiX0BGroup').style.display = 'block';
+                document.getElementById('multiX0ANote').textContent = '过程1的初始位置';
+                document.getElementById('multiX0BNote').textContent = '过程1的初始位置';
+                document.getElementById('multiV0ANote').textContent = '过程1的初速度';
+                document.getElementById('multiV0BNote').textContent = '过程1的初速度';
+                
+                multiInputs.x0A.value = process.params.x0A !== null ? process.params.x0A.toFixed(1) : '0';
+                multiInputs.x0B.value = process.params.x0B !== null ? process.params.x0B.toFixed(1) : '30';
+                multiSliders.x0A.value = process.params.x0A !== null ? process.params.x0A : 0;
+                multiSliders.x0B.value = process.params.x0B !== null ? process.params.x0B : 30;
+            } else {
+                // 后续过程：隐藏初始位置
+                document.getElementById('multiX0AGroup').style.display = 'none';
+                document.getElementById('multiX0BGroup').style.display = 'none';
+                document.getElementById('multiV0ANote').textContent = '继承上一过程末速度';
+                document.getElementById('multiV0BNote').textContent = '继承上一过程末速度';
+            }
+            
+            multiInputs.v0A.value = process.params.v0A.toFixed(1);
+            multiInputs.aA.value = process.params.aA.toFixed(1);
+            multiInputs.v0B.value = process.params.v0B.toFixed(1);
+            multiInputs.aB.value = process.params.aB.toFixed(1);
+            multiInputs.duration.value = process.duration.toFixed(1);
+            
+            multiSliders.v0A.value = process.params.v0A;
+            multiSliders.aA.value = process.params.aA;
+            multiSliders.v0B.value = process.params.v0B;
+            multiSliders.aB.value = process.params.aB;
+            multiSliders.duration.value = process.duration;
+            
+            multiBrakeA.checked = process.params.brakeA;
+            multiBrakeB.checked = process.params.brakeB;
+        }
+        
+        // 计算过程状态（开始时间、结束时间）
+        function calculateProcessStates() {
+            processStates = [];
+            let startTime = 0;
+            
+            multiProcesses.forEach((process, index) => {
+                const endTime = startTime + process.duration;
+                processStates.push({
+                    index: index,
+                    startTime: startTime,
+                    endTime: endTime,
+                    duration: process.duration
+                });
+                startTime = endTime;
+            });
+        }
+        
+        // 获取当前过程和时间偏移
+        function getCurrentProcessAndOffset(t) {
+            if (currentMode === 'single') {
+                return { processIndex: 0, processOffset: t, inProcess: true };
+            }
+            
+            let accumulatedTime = 0;
+            for (let i = 0; i < multiProcesses.length; i++) {
+                if (t >= accumulatedTime && t <= accumulatedTime + multiProcesses[i].duration) {
+                    return {
+                        processIndex: i,
+                        processOffset: t - accumulatedTime,
+                        inProcess: true
+                    };
+                }
+                accumulatedTime += multiProcesses[i].duration;
+            }
+            
+            // 如果时间超过总时间，返回最后一个过程
+            const lastIndex = multiProcesses.length - 1;
+            return {
+                processIndex: lastIndex,
+                processOffset: multiProcesses[lastIndex].duration,
+                inProcess: false
+            };
+        }
+        
+        // ==================== 核心物理计算函数 ====================
+        
+        // 计算停车时间（刹车模式）
+        function calculateStopTime(v0, a) {
+            if (a >= 0) return null; // 加速或匀速，不会停止
+            return -v0 / a; // t = -v₀/a
+        }
+        
+        // 计算物体位置（考虑刹车和多过程）
+        function calculatePosition(obj, t) {
+            const state = objectStates[obj];
+            
+            if (currentMode === 'single') {
+                // 单过程模式
+                const isBrake = obj === 'A' ? brakeA.checked : brakeB.checked;
+                
+                // 如果不启用刹车或不会停止，使用标准公式
+                if (!isBrake || state.stopTime === null || t < state.stopTime) {
+                    const x0 = singleParams[`x0${obj}`];
+                    const v0 = singleParams[`v0${obj}`];
+                    const a = singleParams[`a${obj}`];
+                    return x0 + v0 * t + 0.5 * a * t * t;
+                }
+                
+                // 已经停止，返回停止位置
+                return state.stopPosition;
+            } else {
+                // 多过程模式
+                const { processIndex, processOffset, inProcess } = getCurrentProcessAndOffset(t);
+                
+                if (!inProcess) {
+                    // 超过总时间，返回最后一个位置
+                    const lastProcess = processStates[processStates.length - 1];
+                    return calculatePosition(obj, lastProcess.endTime);
+                }
+                
+                // 计算初始位置和速度（过程1使用设定的初始值，后续过程继承）
+                let currentX = 0;
+                let currentV = 0;
+                
+                // 过程1：使用设定的初始位置和初速度
+                if (processIndex === 0) {
+                    const process = multiProcesses[0];
+                    currentX = obj === 'A' ? process.params.x0A : process.params.x0B;
+                    currentV = obj === 'A' ? process.params.v0A : process.params.v0B;
+                    
+                    // 如果不启用刹车或不会停止，使用标准公式
+                    const isBrake = obj === 'A' ? process.params.brakeA : process.params.brakeB;
+                    const a = obj === 'A' ? process.params.aA : process.params.aB;
+                    
+                    if (!isBrake || state.stopTime === null || t < state.stopTime) {
+                        return currentX + currentV * processOffset + 0.5 * a * processOffset * processOffset;
+                    } else {
+                        // 已经停止，返回停止位置
+                        return state.stopPosition;
+                    }
+                } else {
+                    // 后续过程：需要计算上一过程结束时的位置和速度
+                    // 先计算上一过程结束时的状态
+                    let accumulatedTime = 0;
+                    for (let i = 0; i < processIndex; i++) {
+                        const process = multiProcesses[i];
+                        const duration = process.duration;
+                        const params = process.params;
+                        
+                        // 计算这个过程的初始速度（第一次循环使用过程1的初始速度）
+                        if (i === 0) {
+                            currentX = obj === 'A' ? params.x0A : params.x0B;
+                            currentV = obj === 'A' ? params.v0A : params.v0B;
+                        }
+                        
+                        const a = params[`a${obj}`];
+                        const isBrake = obj === 'A' ? params.brakeA : params.brakeB;
+                        const stopTime = state.stopTime;
+                        
+                        // 如果在这个过程中停止
+                        if (isBrake && stopTime !== null && stopTime >= accumulatedTime && stopTime <= accumulatedTime + duration) {
+                            const stopOffset = stopTime - accumulatedTime;
+                            currentX = currentX + currentV * stopOffset + 0.5 * a * stopOffset * stopOffset;
+                            currentV = 0;
+                            // 已经停止，直接返回停止位置
+                            return currentX;
+                        } else {
+                            // 整个过程都在运动
+                            currentX = currentX + currentV * duration + 0.5 * a * duration * duration;
+                            currentV = currentV + a * duration;
+                        }
+                        
+                        accumulatedTime += duration;
+                    }
+                    
+                    // 当前过程
+                    const currentProcess = multiProcesses[processIndex];
+                    const params = currentProcess.params;
+                    const isBrake = obj === 'A' ? params.brakeA : params.brakeB;
+                    const a = params[`a${obj}`];
+                    
+                    // 如果不启用刹车或不会停止，使用标准公式
+                    if (!isBrake || state.stopTime === null || t < state.stopTime) {
+                        return currentX + currentV * processOffset + 0.5 * a * processOffset * processOffset;
+                    }
+                    
+                    // 已经停止，返回停止位置
+                    return state.stopPosition;
+                }
+            }
+        }
+        
+        // 计算物体速度（考虑刹车和多过程）
+        function calculateVelocity(obj, t) {
+            const state = objectStates[obj];
+            
+            if (currentMode === 'single') {
+                // 单过程模式
+                const isBrake = obj === 'A' ? brakeA.checked : brakeB.checked;
+                
+                // 如果不启用刹车或不会停止，使用标准公式
+                if (!isBrake || state.stopTime === null || t < state.stopTime) {
+                    const v0 = singleParams[`v0${obj}`];
+                    const a = singleParams[`a${obj}`];
+                    return v0 + a * t;
+                }
+                
+                // 已经停止，速度为0
+                return 0;
+            } else {
+                // 多过程模式
+                const { processIndex, processOffset, inProcess } = getCurrentProcessAndOffset(t);
+                
+                if (!inProcess) {
+                    // 超过总时间，速度为最后一个过程结束时的速度
+                    const lastProcess = processStates[processStates.length - 1];
+                    return calculateVelocity(obj, lastProcess.endTime);
+                }
+                
+                // 过程1：使用设定的初速度
+                if (processIndex === 0) {
+                    const process = multiProcesses[0];
+                    const isBrake = obj === 'A' ? process.params.brakeA : process.params.brakeB;
+                    const a = obj === 'A' ? process.params.aA : process.params.aB;
+                    const v0 = obj === 'A' ? process.params.v0A : process.params.v0B;
+                    
+                    // 如果不启用刹车或不会停止，使用标准公式
+                    if (!isBrake || state.stopTime === null || t < state.stopTime) {
+                        return v0 + a * processOffset;
+                    }
+                    
+                    // 已经停止，速度为0
+                    return 0;
+                } else {
+                    // 后续过程：需要计算上一过程结束时的速度
+                    // 先计算上一过程结束时的速度
+                    let currentV = 0;
+                    let accumulatedTime = 0;
+                    
+                    for (let i = 0; i < processIndex; i++) {
+                        const process = multiProcesses[i];
+                        const duration = process.duration;
+                        const params = process.params;
+                        
+                        // 计算这个过程的初始速度（第一次循环使用过程1的初始速度）
+                        if (i === 0) {
+                            currentV = obj === 'A' ? params.v0A : params.v0B;
+                        }
+                        
+                        const a = params[`a${obj}`];
+                        const isBrake = obj === 'A' ? params.brakeA : params.brakeB;
+                        const stopTime = state.stopTime;
+                        
+                        // 如果在这个过程中停止
+                        if (isBrake && stopTime !== null && stopTime >= accumulatedTime && stopTime <= accumulatedTime + duration) {
+                            return 0; // 已经停止
+                        } else {
+                            // 整个过程都在运动
+                            currentV = currentV + a * duration;
+                        }
+                        
+                        accumulatedTime += duration;
+                    }
+                    
+                    // 当前过程
+                    const currentProcess = multiProcesses[processIndex];
+                    const params = currentProcess.params;
+                    const isBrake = obj === 'A' ? params.brakeA : params.brakeB;
+                    const a = params[`a${obj}`];
+                    
+                    // 如果不启用刹车或不会停止，使用标准公式
+                    if (!isBrake || state.stopTime === null || t < state.stopTime) {
+                        return currentV + a * processOffset;
+                    }
+                    
+                    // 已经停止，速度为0
+                    return 0;
+                }
+            }
+        }
+        
+        // 计算物体是否在运动
+        function calculateIsMoving(obj, t) {
+            const state = objectStates[obj];
+            
+            if (currentMode === 'single') {
+                const isBrake = obj === 'A' ? brakeA.checked : brakeB.checked;
+                if (!isBrake || state.stopTime === null) return true;
+                return t < state.stopTime;
+            } else {
+                const { processIndex, processOffset, inProcess } = getCurrentProcessAndOffset(t);
+                if (!inProcess) return false;
+                
+                const currentProcess = multiProcesses[processIndex];
+                const isBrake = obj === 'A' ? currentProcess.params.brakeA : currentProcess.params.brakeB;
+                if (!isBrake || state.stopTime === null) return true;
+                return t < state.stopTime;
+            }
+        }
+        
+        // 计算物体运动时间（考虑刹车停止）
+        function calculateMovementTime(obj, t) {
+            const state = objectStates[obj];
+            
+            if (currentMode === 'single') {
+                const isBrake = obj === 'A' ? brakeA.checked : brakeB.checked;
+                if (!isBrake || state.stopTime === null) {
+                    return t; // 一直运动
+                } else {
+                    return Math.min(t, state.stopTime); // 如果已停止，返回停止时间
+                }
+            } else {
+                // 多过程模式
+                const { processIndex, processOffset, inProcess } = getCurrentProcessAndOffset(t);
+                
+                if (!inProcess) {
+                    // 超过总时间，返回总运动时间
+                    const lastProcess = processStates[processStates.length - 1];
+                    return calculateMovementTime(obj, lastProcess.endTime);
+                }
+                
+                // 计算当前过程开始时的累计运动时间
+                let accumulatedMovementTime = 0;
+                let accumulatedTime = 0;
+                
+                for (let i = 0; i < processIndex; i++) {
+                    const process = multiProcesses[i];
+                    const params = process.params;
+                    const isBrake = obj === 'A' ? params.brakeA : params.brakeB;
+                    
+                    if (isBrake && objectStates[obj].stopTime !== null && 
+                        objectStates[obj].stopTime <= accumulatedTime + process.duration) {
+                        // 在这个过程中已经停止
+                        accumulatedMovementTime += Math.max(0, objectStates[obj].stopTime - accumulatedTime);
+                        return accumulatedMovementTime;
+                    } else {
+                        // 整个过程都在运动
+                        accumulatedMovementTime += process.duration;
+                    }
+                    
+                    accumulatedTime += process.duration;
+                }
+                
+                // 当前过程
+                const currentProcess = multiProcesses[processIndex];
+                const isBrake = obj === 'A' ? currentProcess.params.brakeA : currentProcess.params.brakeB;
+                
+                if (isBrake && objectStates[obj].stopTime !== null && 
+                    objectStates[obj].stopTime <= accumulatedTime + processOffset) {
+                    // 在当前过程中已停止
+                    return accumulatedMovementTime + Math.max(0, objectStates[obj].stopTime - accumulatedTime);
+                } else {
+                    // 还在运动
+                    return accumulatedMovementTime + processOffset;
+                }
+            }
+        }
+        
+        // 计算物体加速度
+        function calculateAcceleration(obj, t) {
+            if (currentMode === 'single') {
+                // 单过程模式
+                const isBrake = obj === 'A' ? brakeA.checked : brakeB.checked;
+                const a = singleParams[`a${obj}`];
+                
+                // 如果启用了刹车且已经停止，加速度为0
+                if (isBrake && objectStates[obj].stopTime !== null && t >= objectStates[obj].stopTime) {
+                    return 0;
+                }
+                return a;
+            } else {
+                // 多过程模式
+                const { processIndex, inProcess } = getCurrentProcessAndOffset(t);
+                
+                if (!inProcess) {
+                    // 超过总时间，返回最后一个过程的加速度（如果停止则为0）
+                    const lastProcess = multiProcesses[multiProcesses.length - 1];
+                    const isBrake = obj === 'A' ? lastProcess.params.brakeA : lastProcess.params.brakeB;
+                    
+                    if (isBrake && objectStates[obj].stopTime !== null && t >= objectStates[obj].stopTime) {
+                        return 0;
+                    }
+                    return obj === 'A' ? lastProcess.params.aA : lastProcess.params.aB;
+                }
+                
+                // 当前过程
+                const currentProcess = multiProcesses[processIndex];
+                const isBrake = obj === 'A' ? currentProcess.params.brakeA : currentProcess.params.brakeB;
+                const a = obj === 'A' ? currentProcess.params.aA : currentProcess.params.aB;
+                
+                // 如果启用了刹车且已经停止，加速度为0
+                if (isBrake && objectStates[obj].stopTime !== null && t >= objectStates[obj].stopTime) {
+                    return 0;
+                }
+                return a;
+            }
+        }
+        
+        // 计算两车距离
+        function calculateDistance(t) {
+            const xA = calculatePosition('A', t);
+            const xB = calculatePosition('B', t);
+            return Math.abs(xA - xB);
+        }
+        
+        // 获取最大时间（单过程或多过程总时间）
+        function getMaxTime() {
+            if (currentMode === 'single') {
+                return singleParams.maxT;
+            } else {
+                // 计算多过程总时间
+                return multiProcesses.reduce((total, process) => total + process.duration, 0);
+            }
+        }
+        
+        // 获取当前时间在哪个过程
+        function getCurrentProcessInfo(t) {
+            if (currentMode === 'single') {
+                return { processIndex: 0, processOffset: t, processStart: 0, processEnd: singleParams.maxT };
+            }
+            
+            let accumulatedTime = 0;
+            for (let i = 0; i < multiProcesses.length; i++) {
+                const processDuration = multiProcesses[i].duration;
+                if (t >= accumulatedTime && t <= accumulatedTime + processDuration) {
+                    return {
+                        processIndex: i,
+                        processOffset: t - accumulatedTime,
+                        processStart: accumulatedTime,
+                        processEnd: accumulatedTime + processDuration
+                    };
+                }
+                accumulatedTime += processDuration;
+            }
+            
+            // 如果超过总时间，返回最后一个过程
+            const lastIndex = multiProcesses.length - 1;
+            const lastStart = accumulatedTime - multiProcesses[lastIndex].duration;
+            return {
+                processIndex: lastIndex,
+                processOffset: multiProcesses[lastIndex].duration,
+                processStart: lastStart,
+                processEnd: accumulatedTime
+            };
+        }
+        
+        // ==================== 关键时刻计算 ====================
+        
+        // 重新计算所有关键时刻
+        function calculateSpecialMoments() {
+            console.log("计算关键时刻...");
+            specialMoments = [];
+            
+            // 重置物体状态
+            objectStates.A = { isMoving: true, stopTime: null, stopPosition: null, movementTime: 0 };
+            objectStates.B = { isMoving: true, stopTime: null, stopPosition: null, movementTime: 0 };
+            
+            // 初始时刻
+            specialMoments.push({
+                time: 0,
+                type: 'initial',
+                description: '初始时刻',
+                color: '#2ecc71'
+            });
+            
+            console.log("添加初始时刻");
+            
+            // 计算最大时间
+            const maxT = getMaxTime();
+            
+            // 计算停车时刻
+            if (currentMode === 'single') {
+                // 单过程模式
+                if (brakeA.checked && singleParams.aA < 0) {
+                    const stopTimeA = calculateStopTime(singleParams.v0A, singleParams.aA);
+                    if (stopTimeA !== null && stopTimeA > 0 && stopTimeA <= maxT) {
+                        objectStates.A.stopTime = stopTimeA;
+                        objectStates.A.stopPosition = singleParams.x0A + singleParams.v0A * stopTimeA + 0.5 * singleParams.aA * stopTimeA * stopTimeA;
+                        specialMoments.push({
+                            time: stopTimeA,
+                            type: 'stop',
+                            description: 'A车停车',
+                            color: '#e74c3c'
+                        });
+                        console.log("添加A车停车时刻:", stopTimeA);
+                    }
+                }
+                
+                if (brakeB.checked && singleParams.aB < 0) {
+                    const stopTimeB = calculateStopTime(singleParams.v0B, singleParams.aB);
+                    if (stopTimeB !== null && stopTimeB > 0 && stopTimeB <= maxT) {
+                        objectStates.B.stopTime = stopTimeB;
+                        objectStates.B.stopPosition = singleParams.x0B + singleParams.v0B * stopTimeB + 0.5 * singleParams.aB * stopTimeB * stopTimeB;
+                        specialMoments.push({
+                            time: stopTimeB,
+                            type: 'stop',
+                            description: 'B车停车',
+                            color: '#e74c3c'
+                        });
+                        console.log("添加B车停车时刻:", stopTimeB);
+                    }
+                }
+            } else {
+                // 多过程模式 - 需要遍历每个过程计算停车时刻
+                let accumulatedTime = 0;
+                for (let i = 0; i < multiProcesses.length; i++) {
+                    const process = multiProcesses[i];
+                    const params = process.params;
+                    
+                    // 计算这个过程的初始速度
+                    let v0A = 0;
+                    let v0B = 0;
+                    
+                    if (i === 0) {
+                        // 过程1：使用设定的初速度
+                        v0A = params.v0A;
+                        v0B = params.v0B;
+                    } else {
+                        // 后续过程：需要计算上一过程结束时的速度
+                        // 这里简化计算，实际应该用循环计算
+                        for (let j = 0; j < i; j++) {
+                            const prevProcess = multiProcesses[j];
+                            const prevParams = prevProcess.params;
+                            const prevDuration = prevProcess.duration;
+                            
+                            // 计算上一过程的末速度
+                            if (j === 0) {
+                                v0A = prevParams.v0A;
+                                v0B = prevParams.v0B;
+                            }
+                            
+                            v0A += prevParams.aA * prevDuration;
+                            v0B += prevParams.aB * prevDuration;
+                        }
+                    }
+                    
+                    // 计算A车停车时刻
+                    if (params.brakeA && params.aA < 0) {
+                        const stopTimeInProcess = calculateStopTime(v0A, params.aA);
+                        if (stopTimeInProcess !== null && stopTimeInProcess > 0 && stopTimeInProcess <= process.duration) {
+                            const stopTime = accumulatedTime + stopTimeInProcess;
+                            if (stopTime <= maxT) {
+                                objectStates.A.stopTime = stopTime;
+                                // 计算停车位置
+                                let xA = params.x0A !== null ? params.x0A : 0;
+                                
+                                // 计算停车位置（需要累加前面过程的影响）
+                                let currentVA = params.v0A;
+                                for (let j = 0; j < i; j++) {
+                                    const p = multiProcesses[j];
+                                    const pParams = p.params;
+                                    const pDuration = p.duration;
+                                    
+                                    // 初始位置只对过程1有效
+                                    if (j === 0) {
+                                        xA = pParams.x0A !== null ? pParams.x0A : 0;
+                                        currentVA = pParams.v0A;
+                                    }
+                                    
+                                    xA += currentVA * pDuration + 0.5 * pParams.aA * pDuration * pDuration;
+                                    currentVA += pParams.aA * pDuration;
+                                }
+                                
+                                // 当前过程的停车位置
+                                objectStates.A.stopPosition = xA + currentVA * stopTimeInProcess + 0.5 * params.aA * stopTimeInProcess * stopTimeInProcess;
+                                
+                                specialMoments.push({
+                                    time: stopTime,
+                                    type: 'stop',
+                                    description: `A车停车 (过程${i+1})`,
+                                    color: '#e74c3c'
+                                });
+                            }
+                        }
+                    }
+                    
+                    // 计算B车停车时刻
+                    if (params.brakeB && params.aB < 0) {
+                        const stopTimeInProcess = calculateStopTime(v0B, params.aB);
+                        if (stopTimeInProcess !== null && stopTimeInProcess > 0 && stopTimeInProcess <= process.duration) {
+                            const stopTime = accumulatedTime + stopTimeInProcess;
+                            if (stopTime <= maxT) {
+                                objectStates.B.stopTime = stopTime;
+                                // 计算停车位置
+                                let xB = params.x0B !== null ? params.x0B : 30;
+                                
+                                // 计算停车位置（需要累加前面过程的影响）
+                                let currentVB = params.v0B;
+                                for (let j = 0; j < i; j++) {
+                                    const p = multiProcesses[j];
+                                    const pParams = p.params;
+                                    const pDuration = p.duration;
+                                    
+                                    // 初始位置只对过程1有效
+                                    if (j === 0) {
+                                        xB = pParams.x0B !== null ? pParams.x0B : 30;
+                                        currentVB = pParams.v0B;
+                                    }
+                                    
+                                    xB += currentVB * pDuration + 0.5 * pParams.aB * pDuration * pDuration;
+                                    currentVB += pParams.aB * pDuration;
+                                }
+                                
+                                // 当前过程的停车位置
+                                objectStates.B.stopPosition = xB + currentVB * stopTimeInProcess + 0.5 * params.aB * stopTimeInProcess * stopTimeInProcess;
+                                
+                                specialMoments.push({
+                                    time: stopTime,
+                                    type: 'stop',
+                                    description: `B车停车 (过程${i+1})`,
+                                    color: '#e74c3c'
+                                });
+                            }
+                        }
+                    }
+                    
+                    accumulatedTime += process.duration;
+                }
+            }
+            
+            // 计算相遇时刻
+            calculateMeetingMoments();
+            
+            // 计算距离极值时刻
+            calculateExtremeMoments();
+            
+            // 添加过程切换时刻
+            if (currentMode === 'multi') {
+                let accumulatedTime = 0;
+                for (let i = 1; i < multiProcesses.length; i++) {
+                    accumulatedTime += multiProcesses[i-1].duration;
+                    specialMoments.push({
+                        time: accumulatedTime,
+                        type: 'process',
+                        description: `切换到过程${i+1}`,
+                        color: '#95a5a6'
+                    });
+                }
+            }
+            
+            // 按时间排序
+            specialMoments.sort((a, b) => a.time - b.time);
+            
+            console.log("关键时刻计算完成，共", specialMoments.length, "个时刻");
+            
+            // 更新状态显示
+            updateStatusDisplay();
+            
+            // 立即更新关键时刻列表
+            updateMomentsList();
+        }
+        
+        // 计算相遇时刻
+        function calculateMeetingMoments() {
+            console.log("计算相遇时刻...");
+            // 使用数值方法查找相遇点
+            const timeStep = 0.05;
+            const maxT = getMaxTime();
+            let lastXDiff = calculatePosition('A', 0) - calculatePosition('B', 0);
+            
+            for (let t = timeStep; t <= maxT; t += timeStep) {
+                const xA = calculatePosition('A', t);
+                const xB = calculatePosition('B', t);
+                const xDiff = xA - xB;
+                
+                // 检测符号变化，表示相遇
+                if (lastXDiff * xDiff <= 0 && Math.abs(xDiff) < 5) {
+                    // 二分法精确查找
+                    let left = t - timeStep;
+                    let right = t;
+                    let meetingTime = t;
+                    
+                    for (let i = 0; i < 10; i++) {
+                        meetingTime = (left + right) / 2;
+                        const xA_mid = calculatePosition('A', meetingTime);
+                        const xB_mid = calculatePosition('B', meetingTime);
+                        const diff = xA_mid - xB_mid;
+                        
+                        if (Math.abs(diff) < 0.01) {
+                            break;
+                        } else if (diff * (xA - xB) > 0) {
+                            right = meetingTime;
+                        } else {
+                            left = meetingTime;
+                        }
+                    }
+                    
+                    // 检查是否已经存在相近的相遇时刻
+                    const existing = specialMoments.find(
+                        m => m.type === 'meeting' && Math.abs(m.time - meetingTime) < 0.1
+                    );
+                    
+                    if (!existing) {
+                        const meetingCount = specialMoments.filter(m => m.type === 'meeting').length + 1;
+                        const description = meetingCount === 1 ? '第一次相遇' : 
+                                          meetingCount === 2 ? '第二次相遇' : 
+                                          `第${meetingCount}次相遇`;
+                        
+                        specialMoments.push({
+                            time: meetingTime,
+                            type: 'meeting',
+                            description: description,
+                            color: '#9b59b6'
+                        });
+                        console.log("添加相遇时刻:", meetingTime, description);
+                    }
+                }
+                
+                lastXDiff = xDiff;
+            }
+        }
+        
+        // 计算距离极值时刻 - 修复版：显示两车之间的距离
+        function calculateExtremeMoments() {
+            console.log("计算距离极值时刻...");
+            // 距离函数：d(t) = |xA(t) - xB(t)|
+            // 极值点出现在导数d'(t)=0或不可导处
+            
+            const timeStep = 0.1;
+            const maxT = getMaxTime();
+            let lastDistance = Math.abs(
+                calculatePosition('A', 0) - calculatePosition('B', 0)
+            );
+            let lastDerivative = 0;
+            
+            for (let t = timeStep; t <= maxT; t += timeStep) {
+                const xA = calculatePosition('A', t);
+                const xB = calculatePosition('B', t);
+                const distance = Math.abs(xA - xB);
+                
+                // 计算导数（数值微分）
+                const derivative = (distance - lastDistance) / timeStep;
+                
+                // 检查导数变号（极值点）
+                if (lastDerivative * derivative < 0 && Math.abs(derivative) < 1) {
+                    // 检查是否已经存在相近的极值时刻
+                    const existing = specialMoments.find(
+                        m => m.type === 'extreme' && Math.abs(m.time - t) < 0.5
+                    );
+                    
+                    if (!existing) {
+                        // 计算极值点的精确距离
+                        const t_before = t - timeStep;
+                        const t_after = t + timeStep;
+                        const dist_before = Math.abs(
+                            calculatePosition('A', t_before) - calculatePosition('B', t_before)
+                        );
+                        const dist_after = Math.abs(
+                            calculatePosition('A', t_after) - calculatePosition('B', t_after)
+                        );
+                        
+                        // 判断是极大值还是极小值
+                        const isMin = distance < dist_before && distance < dist_after;
+                        const isMax = distance > dist_before && distance > dist_after;
+                        
+                        if (isMin || isMax) {
+                            const description = isMin ? 
+                                `距离最小: ${distance.toFixed(2)} m` : 
+                                `距离最大: ${distance.toFixed(2)} m`;
+                            
+                            specialMoments.push({
+                                time: t,
+                                type: 'extreme',
+                                description: description,
+                                color: '#f1c40f'
+                            });
+                            console.log("添加距离极值时刻:", t, description);
+                        }
+                    }
+                }
+                
+                lastDistance = distance;
+                lastDerivative = derivative;
+            }
+            
+            // 检查初始时刻是否为极值点
+            const initialDistance = Math.abs(singleParams.x0A - singleParams.x0B);
+            const t_initial_check = timeStep;
+            const dist_initial_check = Math.abs(
+                calculatePosition('A', t_initial_check) - calculatePosition('B', t_initial_check)
+            );
+            
+            if (initialDistance > dist_initial_check) {
+                // 初始时刻可能是极大值
+                const existing = specialMoments.find(
+                    m => m.type === 'extreme' && Math.abs(m.time - 0) < 0.5
+                );
+                
+                if (!existing) {
+                    specialMoments.push({
+                        time: 0,
+                        type: 'extreme',
+                        description: `距离最大: ${initialDistance.toFixed(2)} m`,
+                        color: '#f1c40f'
+                    });
+                    console.log("添加初始时刻距离极大值:", initialDistance);
+                }
+            }
+        }
+        
+        // ==================== 界面更新函数 ====================
+        
+        // 更新状态显示
+        function updateStatusDisplay() {
+            let t;
+            if (currentMode === 'single') {
+                t = singleParams.t;
+            } else {
+                t = singleParams.t; // 使用单过程的时间，但需要转换为多过程时间
+            }
+            
+            const vA = calculateVelocity('A', t);
+            const vB = calculateVelocity('B', t);
+            const isMovingA = calculateIsMoving('A', t);
+            const isMovingB = calculateIsMoving('B', t);
+            
+            // 更新A状态
+            if (!isMovingA) {
+                statusA.textContent = '已停车';
+                statusA.className = 'object-status status-stopped';
+            } else if (currentMode === 'single' && brakeA.checked && singleParams.aA < 0 && vA > 0) {
+                statusA.textContent = '刹车中';
+                statusA.className = 'object-status status-braking';
+            } else if (currentMode === 'multi') {
+                const processInfo = getCurrentProcessInfo(t);
+                const currentProcess = multiProcesses[processInfo.processIndex];
+                if (currentProcess.params.brakeA && currentProcess.params.aA < 0 && vA > 0) {
+                    statusA.textContent = '刹车中';
+                    statusA.className = 'object-status status-braking';
+                } else {
+                    statusA.textContent = '运动中';
+                    statusA.className = 'object-status status-moving';
+                }
+            } else {
+                statusA.textContent = '运动中';
+                statusA.className = 'object-status status-moving';
+            }
+            
+            // 更新B状态
+            if (!isMovingB) {
+                statusB.textContent = '已停车';
+                statusB.className = 'object-status status-stopped';
+            } else if (currentMode === 'single' && brakeB.checked && singleParams.aB < 0 && vB > 0) {
+                statusB.textContent = '刹车中';
+                statusB.className = 'object-status status-braking';
+            } else if (currentMode === 'multi') {
+                const processInfo = getCurrentProcessInfo(t);
+                const currentProcess = multiProcesses[processInfo.processIndex];
+                if (currentProcess.params.brakeB && currentProcess.params.aB < 0 && vB > 0) {
+                    statusB.textContent = '刹车中';
+                    statusB.className = 'object-status status-braking';
+                } else {
+                    statusB.textContent = '运动中';
+                    statusB.className = 'object-status status-moving';
+                }
+            } else {
+                statusB.textContent = '运动中';
+                statusB.className = 'object-status status-moving';
+            }
+        }
+        
+        // 更新输入控件
+        function updateInputsAndSliders() {
+            // 单过程模式
+            singleInputs.x0A.value = singleParams.x0A.toFixed(1);
+            singleInputs.v0A.value = singleParams.v0A.toFixed(1);
+            singleInputs.aA.value = singleParams.aA.toFixed(1);
+            singleInputs.x0B.value = singleParams.x0B.toFixed(1);
+            singleInputs.v0B.value = singleParams.v0B.toFixed(1);
+            singleInputs.aB.value = singleParams.aB.toFixed(1);
+            singleInputs.time.value = singleParams.t.toFixed(1);
+            
+            singleSliders.x0A.value = singleParams.x0A;
+            singleSliders.v0A.value = singleParams.v0A;
+            singleSliders.aA.value = singleParams.aA;
+            singleSliders.x0B.value = singleParams.x0B;
+            singleSliders.v0B.value = singleParams.v0B;
+            singleSliders.aB.value = singleParams.aB;
+            singleSliders.time.value = singleParams.t;
+            
+            // 多过程模式 - 更新当前过程的控件
+            updateMultiProcessControls();
+        }
+        
+        // 更新信息面板
+        function updateInfoPanel() {
+            let t;
+            if (currentMode === 'single') {
+                t = singleParams.t;
+            } else {
+                t = singleParams.t; // 使用单过程的时间，但需要转换为多过程时间
+            }
+            
+            const xA = calculatePosition('A', t);
+            const xB = calculatePosition('B', t);
+            const vA = calculateVelocity('A', t);
+            const vB = calculateVelocity('B', t);
+            
+            const distance = Math.abs(xA - xB);
+            const relativeSpeed = Math.abs(vA - vB);
+            
+            // 计算位移（当前位置 - 初始位置）
+            let initialXA, initialXB;
+            if (currentMode === 'single') {
+                initialXA = singleParams.x0A;
+                initialXB = singleParams.x0B;
+            } else {
+                // 多过程模式：使用过程1的初始位置
+                initialXA = multiProcesses[0].params.x0A !== null ? multiProcesses[0].params.x0A : 0;
+                initialXB = multiProcesses[0].params.x0B !== null ? multiProcesses[0].params.x0B : 30;
+            }
+            
+            const displacementA = xA - initialXA;
+            const displacementB = xB - initialXB;
+            
+            // 计算运动时间（考虑刹车）
+            const movementTimeA = calculateMovementTime('A', t);
+            const movementTimeB = calculateMovementTime('B', t);
+            
+            // 计算加速度
+            const accelerationA = calculateAcceleration('A', t);
+            const accelerationB = calculateAcceleration('B', t);
+            
+            // 更新数据项
+            document.getElementById('distanceValue').textContent = distance.toFixed(2) + ' m';
+            document.getElementById('relativeSpeedValue').textContent = relativeSpeed.toFixed(2) + ' m/s';
+            document.getElementById('velocityAValue').textContent = vA.toFixed(2) + ' m/s';
+            document.getElementById('velocityBValue').textContent = vB.toFixed(2) + ' m/s';
+            document.getElementById('displacementAValue').textContent = displacementA.toFixed(2) + ' m';
+            document.getElementById('displacementBValue').textContent = displacementB.toFixed(2) + ' m';
+            document.getElementById('movementTimeAValue').textContent = movementTimeA.toFixed(2) + ' s';
+            document.getElementById('movementTimeBValue').textContent = movementTimeB.toFixed(2) + ' s';
+            document.getElementById('accelerationAValue').textContent = accelerationA.toFixed(2) + ' m/s²';
+            document.getElementById('accelerationBValue').textContent = accelerationB.toFixed(2) + ' m/s²';
+            
+            // 更新过程信息
+            const processInfo = getCurrentProcessInfo(t);
+            document.getElementById('currentProcessValue').textContent = processInfo.processIndex + 1;
+            document.getElementById('processTimeValue').textContent = processInfo.processOffset.toFixed(2) + ' s';
+            
+            // 检查临界条件
+            checkCriticalConditions();
+        }
+        
+        // 检查临界条件
+        function checkCriticalConditions() {
+            let t;
+            if (currentMode === 'single') {
+                t = singleParams.t;
+            } else {
+                t = singleParams.t;
+            }
+            
+            const xA = calculatePosition('A', t);
+            const xB = calculatePosition('B', t);
+            const vA = calculateVelocity('A', t);
+            const vB = calculateVelocity('B', t);
+            
+            let message = '';
+            
+            // 相遇
+            if (Math.abs(xA - xB) < 0.5) {
+                message = '🎯 两物体相遇！';
+            }
+            // 速度相等（距离极值）
+            else if (Math.abs(vA - vB) < 0.2) {
+                message = '⚡ 速度相等，距离达到极值';
+            }
+            // 停车
+            else if (!calculateIsMoving('A', t) && !calculateIsMoving('B', t)) {
+                message = '🛑 两车均已停车';
+            }
+            else if (!calculateIsMoving('A', t)) {
+                message = '🛑 A车已停车';
+            }
+            else if (!calculateIsMoving('B', t)) {
+                message = '🛑 B车已停车';
+            }
+            // 过程切换
+            else if (currentMode === 'multi') {
+                const processInfo = getCurrentProcessInfo(t);
+                if (Math.abs(processInfo.processOffset) < 0.1 && processInfo.processIndex > 0) {
+                    message = `🔄 切换到过程${processInfo.processIndex + 1}`;
+                }
+            }
+            
+            const criticalInfo = document.getElementById('criticalInfo');
+            const criticalText = document.getElementById('criticalText');
+            
+            if (message) {
+                criticalText.textContent = message;
+                criticalInfo.style.display = 'block';
+            } else {
+                criticalInfo.style.display = 'none';
+            }
+        }
+        
+        // 更新关键时刻列表
+        function updateMomentsList() {
+            console.log("更新关键时刻列表，共", specialMoments.length, "个时刻");
+            momentsList.innerHTML = '';
+            
+            if (specialMoments.length === 0) {
+                momentsList.innerHTML = '<div class="moment-item" style="text-align: center; color: #999;">暂无关键时刻</div>';
+                return;
+            }
+            
+            let t;
+            if (currentMode === 'single') {
+                t = singleParams.t;
+            } else {
+                t = singleParams.t;
+            }
+            
+            specialMoments.forEach((moment, index) => {
+                const div = document.createElement('div');
+                div.className = 'moment-item';
+                if (Math.abs(t - moment.time) < 0.1) {
+                    div.classList.add('active');
+                }
+                
+                div.innerHTML = `
+                    <div class="moment-time">
+                        <span>t = ${moment.time.toFixed(2)} s</span>
+                        <span style="color: ${moment.color};">${moment.type === 'stop' ? '🛑' : moment.type === 'meeting' ? '🤝' : moment.type === 'extreme' ? '📊' : moment.type === 'process' ? '🔄' : '📍'}</span>
+                    </div>
+                    <div class="moment-description">${moment.description}</div>
+                `;
+                
+                div.addEventListener('click', () => {
+                    if (currentMode === 'single') {
+                        singleParams.t = moment.time;
+                        singleSliders.time.value = moment.time;
+                        singleInputs.time.value = moment.time.toFixed(1);
+                    } else {
+                        singleParams.t = moment.time;
+                        // 多过程模式也需要更新时间，但不需要更新滑块（因为滑块是单过程的）
+                        // 我们可以考虑在多过程模式下也显示时间滑块
+                    }
+                    stopAnimation();
+                    drawMotion();
+                    updateCharts();
+                    updateInfoPanel();
+                    updateMomentsList();
+                });
+                
+                momentsList.appendChild(div);
+            });
+        }
+        
+        // 绘制过程标记
+        function drawProcessMarkers() {
+            if (!document.getElementById('showProcessMarkers').checked || currentMode === 'single') {
+                processMarkers.innerHTML = '';
+                return;
+            }
+            
+            const width = canvas.width;
+            const height = canvas.height;
+            let html = '';
+            
+            // 计算总时间
+            const totalTime = getMaxTime();
+            
+            // 绘制每个过程的标记
+            let accumulatedTime = 0;
+            multiProcesses.forEach((process, index) => {
+                // 计算标记位置
+                const x = 50 + (accumulatedTime / totalTime) * (width - 100);
+                
+                // 添加标记线
+                html += `<div class="process-marker-line" style="left: ${x}px;"></div>`;
+                
+                // 添加标记文本
+                html += `<div class="process-marker" style="left: ${x}px;">过程${index + 1}<br>${accumulatedTime.toFixed(1)}s</div>`;
+                
+                accumulatedTime += process.duration;
+            });
+            
+            // 添加最后一个标记
+            const x = 50 + (accumulatedTime / totalTime) * (width - 100);
+            html += `<div class="process-marker-line" style="left: ${x}px;"></div>`;
+            html += `<div class="process-marker" style="left: ${x}px;">结束<br>${accumulatedTime.toFixed(1)}s</div>`;
+            
+            processMarkers.innerHTML = html;
+        }
+        
+        // ==================== 绘图函数 ====================
+        
+        // 绘制运动视图
+        function drawMotion() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 清空画布
+            ctx.clearRect(0, 0, width, height);
+            
+            // 绘制坐标轴
+            drawAxes();
+            
+            // 计算当前位置
+            let t;
+            if (currentMode === 'single') {
+                t = singleParams.t;
+            } else {
+                t = singleParams.t;
+            }
+            
+            const xA = calculatePosition('A', t);
+            const xB = calculatePosition('B', t);
+            const vA = calculateVelocity('A', t);
+            const vB = calculateVelocity('B', t);
+            
+            // 绘制轨迹
+            if (document.getElementById('showTrajectory').checked) {
+                drawTrajectory();
+            }
+            
+            // 绘制关键时刻标记
+            if (document.getElementById('showAllMoments').checked) {
+                drawMomentMarkers();
+            }
+            
+            // 绘制停车位置
+            if (document.getElementById('showStopPosition').checked) {
+                if (objectStates.A.stopPosition !== null) {
+                    drawStopPosition(objectStates.A.stopPosition, '#3498db', 'A');
+                }
+                if (objectStates.B.stopPosition !== null) {
+                    drawStopPosition(objectStates.B.stopPosition, '#e74c3c', 'B');
+                }
+            }
+            
+            // 绘制物体
+            drawObject(xA, height/2, '#3498db', 'A', vA, calculateIsMoving('A', t));
+            drawObject(xB, height/2, '#e74c3c', 'B', vB, calculateIsMoving('B', t));
+            
+            // 绘制距离线
+            drawDistanceLine(xA, xB, height/2);
+            
+            // 绘制时间指示器
+            drawTimeIndicator();
+            
+            // 绘制过程标记
+            drawProcessMarkers();
+        }
+        
+        // 绘制坐标轴
+        function drawAxes() {
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // x轴（位置轴）
+            ctx.beginPath();
+            ctx.moveTo(50, height/2);
+            ctx.lineTo(width - 50, height/2);
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 刻度
+            ctx.font = '14px Arial';
+            ctx.fillStyle = '#7f8c8d';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'top';
+            
+            for (let i = -50; i <= 150; i += 20) {
+                const x = 50 + (i + 50) * (width - 100) / 200;
+                ctx.beginPath();
+                ctx.moveTo(x, height/2 - 5);
+                ctx.lineTo(x, height/2 + 5);
+                ctx.stroke();
+                ctx.fillText(i.toString(), x, height/2 + 10);
+            }
+            
+            // 标签
+            ctx.font = 'bold 16px Arial';
+            ctx.fillText('位置 x (m)', width - 30, height/2 - 20);
+            
+            // 时间轴（顶部）
+            const maxT = getMaxTime();
+            ctx.beginPath();
+            ctx.moveTo(50, 30);
+            ctx.lineTo(width - 50, 30);
+            ctx.strokeStyle = '#95a5a6';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            
+            // 时间刻度
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#95a5a6';
+            ctx.textAlign = 'center';
+            
+            for (let i = 0; i <= maxT; i += Math.ceil(maxT/10)) {
+                const x = 50 + (i / maxT) * (width - 100);
+                ctx.beginPath();
+                ctx.moveTo(x, 25);
+                ctx.lineTo(x, 35);
+                ctx.stroke();
+                ctx.fillText(i.toString(), x, 40);
+            }
+            
+            // 时间标签
+            ctx.fillText('时间 t (s)', width/2, 60);
+        }
+        
+        // 绘制物体
+        function drawObject(x, y, color, label, velocity, isMoving) {
+            const scaledX = 50 + (x + 50) * (canvas.width - 100) / 200;
+            
+            // 车身
+            ctx.beginPath();
+            ctx.rect(scaledX - 15, y - 10, 30, 20);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 车轮
+            ctx.beginPath();
+            ctx.arc(scaledX - 8, y + 10, 5, 0, Math.PI * 2);
+            ctx.arc(scaledX + 8, y + 10, 5, 0, Math.PI * 2);
+            ctx.fillStyle = '#2c3e50';
+            ctx.fill();
+            
+            // 标签
+            ctx.font = 'bold 16px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText(label, scaledX, y);
+            
+            // 速度显示
+            if (document.getElementById('showVelocity').checked) {
+                ctx.font = 'bold 14px Arial';
+                ctx.fillStyle = color;
+                ctx.fillText(`v=${velocity.toFixed(2)}`, scaledX, y - 25);
+            }
+            
+            // 刹车灯
+            let brakeEnabled = false;
+            let a = 0;
+            
+            if (currentMode === 'single') {
+                brakeEnabled = label === 'A' ? brakeA.checked : brakeB.checked;
+                a = label === 'A' ? singleParams.aA : singleParams.aB;
+            } else {
+                let t;
+                if (currentMode === 'single') {
+                    t = singleParams.t;
+                } else {
+                    t = singleParams.t;
+                }
+                const processInfo = getCurrentProcessInfo(t);
+                const currentProcess = multiProcesses[processInfo.processIndex];
+                brakeEnabled = label === 'A' ? currentProcess.params.brakeA : currentProcess.params.brakeB;
+                a = label === 'A' ? currentProcess.params.aA : currentProcess.params.aB;
+            }
+            
+            if (document.getElementById('showBrakeLight').checked && brakeEnabled && a < 0 && velocity > 0) {
+                ctx.save();
+                ctx.fillStyle = '#e74c3c';
+                
+                // 左灯
+                ctx.beginPath();
+                ctx.arc(scaledX - 12, y + 5, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 右灯
+                ctx.beginPath();
+                ctx.arc(scaledX + 12, y + 5, 3, 0, Math.PI * 2);
+                ctx.fill();
+                
+                // 闪烁效果
+                if (Math.floor(Date.now() / 200) % 2 === 0) {
+                    ctx.globalAlpha = 0.7;
+                    ctx.beginPath();
+                    ctx.arc(scaledX - 12, y + 5, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.beginPath();
+                    ctx.arc(scaledX + 12, y + 5, 5, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+                ctx.restore();
+            }
+            
+            // 停车标志
+            if (!isMoving) {
+                ctx.beginPath();
+                ctx.arc(scaledX, y - 15, 8, 0, Math.PI * 2);
+                ctx.fillStyle = '#e74c3c';
+                ctx.fill();
+                ctx.font = 'bold 12px Arial';
+                ctx.fillStyle = 'white';
+                ctx.fillText('停', scaledX, y - 15);
+            }
+            
+            // 位置标记
+            ctx.beginPath();
+            ctx.moveTo(scaledX, y + 15);
+            ctx.lineTo(scaledX, canvas.height - 30);
+            ctx.setLineDash([5, 5]);
+            ctx.strokeStyle = color + '80';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            // 位置值
+            ctx.font = '14px Arial';
+            ctx.fillStyle = color;
+            ctx.fillText(`x=${x.toFixed(2)}`, scaledX, canvas.height - 15);
+        }
+        
+        // 绘制停车位置
+        function drawStopPosition(x, color, label) {
+            const width = canvas.width;
+            const height = canvas.height;
+            const scaledX = 50 + (x + 50) * (width - 100) / 200;
+            
+            ctx.beginPath();
+            ctx.moveTo(scaledX, height/2 - 60);
+            ctx.lineTo(scaledX, height/2 + 60);
+            ctx.strokeStyle = color + '40';
+            ctx.lineWidth = 2;
+            ctx.setLineDash([3, 3]);
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.beginPath();
+            ctx.arc(scaledX, height/2 - 70, 8, 0, Math.PI * 2);
+            ctx.fillStyle = color;
+            ctx.fill();
+            
+            ctx.font = 'bold 12px Arial';
+            ctx.fillStyle = 'white';
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('停', scaledX, height/2 - 70);
+            
+            ctx.font = '12px Arial';
+            ctx.fillStyle = color;
+            ctx.fillText(`${label}车停车位置`, scaledX, height/2 - 85);
+        }
+        
+        // 绘制关键时刻标记
+        function drawMomentMarkers() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const maxT = getMaxTime();
+            
+            specialMoments.forEach(moment => {
+                const xA = calculatePosition('A', moment.time);
+                const scaledXA = 50 + (xA + 50) * (width - 100) / 200;
+                
+                // 计算时间标记位置（在时间轴上）
+                const timeX = 50 + (moment.time / maxT) * (width - 100);
+                
+                // 垂直线
+                ctx.beginPath();
+                ctx.moveTo(timeX, 30);
+                ctx.lineTo(timeX, height/2 - 20);
+                ctx.strokeStyle = moment.color + '80';
+                ctx.lineWidth = 2;
+                ctx.setLineDash([3, 3]);
+                ctx.stroke();
+                ctx.setLineDash([]);
+                
+                // 时间标签
+                ctx.font = '12px Arial';
+                ctx.fillStyle = moment.color;
+                ctx.textAlign = 'center';
+                ctx.fillText(`t=${moment.time.toFixed(2)}`, timeX, 15);
+                
+                // 图标
+                if (moment.type === 'meeting' || moment.type === 'stop' || moment.type === 'process') {
+                    ctx.beginPath();
+                    ctx.arc(timeX, height/2 - 60, 8, 0, Math.PI * 2);
+                    ctx.fillStyle = moment.color;
+                    ctx.fill();
+                    ctx.strokeStyle = 'white';
+                    ctx.lineWidth = 2;
+                    ctx.stroke();
+                    
+                    ctx.font = 'bold 12px Arial';
+                    ctx.fillStyle = 'white';
+                    ctx.textAlign = 'center';
+                    ctx.textBaseline = 'middle';
+                    let symbol = '';
+                    if (moment.type === 'meeting') symbol = '碰';
+                    else if (moment.type === 'stop') symbol = '停';
+                    else if (moment.type === 'process') symbol = 'P';
+                    ctx.fillText(symbol, timeX, height/2 - 58);
+                }
+            });
+        }
+        
+        // 绘制轨迹
+        function drawTrajectory() {
+            const width = canvas.width;
+            const height = canvas.height;
+            const maxT = getMaxTime();
+            
+            // A轨迹
+            ctx.beginPath();
+            const step = maxT / 200; // 根据总时间调整步长
+            for (let t = 0; t <= maxT; t += step) {
+                const x = calculatePosition('A', t);
+                const scaledX = 50 + (x + 50) * (width - 100) / 200;
+                const scaledY = height/2 - 30;
+                if (t === 0) ctx.moveTo(scaledX, scaledY);
+                else ctx.lineTo(scaledX, scaledY);
+            }
+            ctx.strokeStyle = '#3498db80';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // B轨迹
+            ctx.beginPath();
+            for (let t = 0; t <= maxT; t += step) {
+                const x = calculatePosition('B', t);
+                const scaledX = 50 + (x + 50) * (width - 100) / 200;
+                const scaledY = height/2 - 50;
+                if (t === 0) ctx.moveTo(scaledX, scaledY);
+                else ctx.lineTo(scaledX, scaledY);
+            }
+            ctx.strokeStyle = '#e74c3c80';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+        }
+        
+        // 绘制距离线
+        function drawDistanceLine(xA, xB, y) {
+            const scaledXA = 50 + (xA + 50) * (canvas.width - 100) / 200;
+            const scaledXB = 50 + (xB + 50) * (canvas.width - 100) / 200;
+            const midX = (scaledXA + scaledXB) / 2;
+            const distance = Math.abs(xA - xB);
+            
+            ctx.beginPath();
+            ctx.moveTo(scaledXA, y - 25);
+            ctx.lineTo(scaledXB, y - 25);
+            ctx.setLineDash([5, 3]);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 1;
+            ctx.stroke();
+            ctx.setLineDash([]);
+            
+            ctx.font = 'bold 14px Arial';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'center';
+            ctx.fillText(`距离: ${distance.toFixed(2)} m`, midX, y - 40);
+        }
+        
+        // 绘制时间指示器
+        function drawTimeIndicator() {
+            let t;
+            if (currentMode === 'single') {
+                t = singleParams.t;
+            } else {
+                t = singleParams.t;
+            }
+            
+            const processInfo = getCurrentProcessInfo(t);
+            
+            ctx.font = 'bold 18px Arial';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'left';
+            ctx.fillText(`时间 t = ${t.toFixed(2)} s`, 20, 80);
+            
+            if (currentMode === 'multi') {
+                ctx.font = '14px Arial';
+                ctx.fillText(`过程 ${processInfo.processIndex + 1} (${processInfo.processOffset.toFixed(2)}/${multiProcesses[processInfo.processIndex].duration.toFixed(2)} s)`, 20, 105);
+            }
+        }
+        
+        // ==================== 图表函数 ====================
+        
+        // 初始化图表
+        function initCharts() {
+            // s-t图
+            sChart = echarts.init(document.getElementById('sChart'));
+            sChart.setOption({
+                backgroundColor: '#f8f9fa',
+                grid: { left: '12%', right: '8%', top: '15%', bottom: '15%' },
+                xAxis: {
+                    type: 'value',
+                    name: '时间 t (s)',
+                    min: 0,
+                    max: 20,
+                    splitLine: { show: true }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '位移 x (m)',
+                    splitLine: { show: true }
+                },
+                series: [
+                    {
+                        name: '物体A',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#3498db' },
+                        symbol: 'none'
+                    },
+                    {
+                        name: '物体B',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#e74c3c' },
+                        symbol: 'none'
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: params => {
+                        let result = '时间: ' + params[0].axisValue + ' s<br/>';
+                        params.forEach(p => {
+                            result += p.marker + p.seriesName + ': ' + p.data[1].toFixed(2) + ' m<br/>';
+                        });
+                        return result;
+                    }
+                }
+            });
+            
+            // v-t图
+            vChart = echarts.init(document.getElementById('vChart'));
+            vChart.setOption({
+                backgroundColor: '#f8f9fa',
+                grid: { left: '12%', right: '8%', top: '15%', bottom: '15%' },
+                xAxis: {
+                    type: 'value',
+                    name: '时间 t (s)',
+                    min: 0,
+                    max: 20,
+                    splitLine: { show: true }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '速度 v (m/s)',
+                    splitLine: { show: true }
+                },
+                series: [
+                    {
+                        name: '物体A',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#3498db' },
+                        symbol: 'none'
+                    },
+                    {
+                        name: '物体B',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#e74c3c' },
+                        symbol: 'none'
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: params => {
+                        let result = '时间: ' + params[0].axisValue + ' s<br/>';
+                        params.forEach(p => {
+                            result += p.marker + p.seriesName + ': ' + p.data[1].toFixed(2) + ' m/s<br/>';
+                        });
+                        return result;
+                    }
+                }
+            });
+            
+            // a-t图
+            aChart = echarts.init(document.getElementById('aChart'));
+            aChart.setOption({
+                backgroundColor: '#f8f9fa',
+                grid: { left: '12%', right: '8%', top: '15%', bottom: '15%' },
+                xAxis: {
+                    type: 'value',
+                    name: '时间 t (s)',
+                    min: 0,
+                    max: 20,
+                    splitLine: { show: true }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '加速度 a (m/s²)',
+                    splitLine: { show: true }
+                },
+                series: [
+                    {
+                        name: '物体A',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#3498db' },
+                        symbol: 'none'
+                    },
+                    {
+                        name: '物体B',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#e74c3c' },
+                        symbol: 'none'
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: params => {
+                        let result = '时间: ' + params[0].axisValue + ' s<br/>';
+                        params.forEach(p => {
+                            result += p.marker + p.seriesName + ': ' + p.data[1].toFixed(2) + ' m/s²<br/>';
+                        });
+                        return result;
+                    }
+                }
+            });
+            
+            // d-t图（距离-时间图）
+            dChart = echarts.init(document.getElementById('dChart'));
+            dChart.setOption({
+                backgroundColor: '#f8f9fa',
+                grid: { left: '12%', right: '8%', top: '15%', bottom: '15%' },
+                xAxis: {
+                    type: 'value',
+                    name: '时间 t (s)',
+                    min: 0,
+                    max: 20,
+                    splitLine: { show: true }
+                },
+                yAxis: {
+                    type: 'value',
+                    name: '距离 d (m)',
+                    splitLine: { show: true }
+                },
+                series: [
+                    {
+                        name: '两车距离',
+                        type: 'line',
+                        smooth: true,
+                        lineStyle: { width: 3, color: '#9b59b6' },
+                        symbol: 'none',
+                        areaStyle: {
+                            color: {
+                                type: 'linear',
+                                x: 0, y: 0, x2: 0, y2: 1,
+                                colorStops: [{
+                                    offset: 0, color: '#9b59b640'
+                                }, {
+                                    offset: 1, color: '#9b59b610'
+                                }]
+                            }
+                        }
+                    }
+                ],
+                tooltip: {
+                    trigger: 'axis',
+                    formatter: params => {
+                        let result = '时间: ' + params[0].axisValue + ' s<br/>';
+                        params.forEach(p => {
+                            result += p.marker + p.seriesName + ': ' + p.data[1].toFixed(2) + ' m<br/>';
+                        });
+                        return result;
+                    }
+                }
+            });
+        }
+        
+        // 更新图表
+        function updateCharts() {
+            // 生成数据
+            const maxT = getMaxTime();
+            const sDataA = [], sDataB = [];
+            const vDataA = [], vDataB = [];
+            const aDataA = [], aDataB = [];
+            const dData = [];
+            
+            const step = maxT / 200;
+            for (let t = 0; t <= maxT; t += step) {
+                sDataA.push([t, calculatePosition('A', t)]);
+                sDataB.push([t, calculatePosition('B', t)]);
+                vDataA.push([t, calculateVelocity('A', t)]);
+                vDataB.push([t, calculateVelocity('B', t)]);
+                dData.push([t, calculateDistance(t)]);
+                
+                // 加速度数据（考虑刹车和多过程）
+                let aA = 0, aB = 0;
+                
+                if (currentMode === 'single') {
+                    aA = singleParams.aA;
+                    aB = singleParams.aB;
+                    if (brakeA.checked && t >= objectStates.A.stopTime) aA = 0;
+                    if (brakeB.checked && t >= objectStates.B.stopTime) aB = 0;
+                } else {
+                    // 多过程模式
+                    const processInfo = getCurrentProcessInfo(t);
+                    const currentProcess = multiProcesses[processInfo.processIndex];
+                    aA = currentProcess.params.aA;
+                    aB = currentProcess.params.aB;
+                    
+                    if (currentProcess.params.brakeA && t >= objectStates.A.stopTime) aA = 0;
+                    if (currentProcess.params.brakeB && t >= objectStates.B.stopTime) aB = 0;
+                }
+                
+                aDataA.push([t, aA]);
+                aDataB.push([t, aB]);
+            }
+            
+            // 更新图表
+            sChart.setOption({ 
+                xAxis: { max: maxT },
+                series: [{ data: sDataA }, { data: sDataB }] 
+            });
+            vChart.setOption({ 
+                xAxis: { max: maxT },
+                series: [{ data: vDataA }, { data: vDataB }] 
+            });
+            aChart.setOption({ 
+                xAxis: { max: maxT },
+                series: [{ data: aDataA }, { data: aDataB }] 
+            });
+            dChart.setOption({ 
+                xAxis: { max: maxT },
+                series: [{ data: dData }] 
+            });
+        }
+        
+        // ==================== 动画控制 ====================
+        
+        // 开始动画
+        function startAnimation() {
+            if (isPlaying) return;
+            
+            isPlaying = true;
+            playBtn.disabled = true;
+            pauseBtn.disabled = false;
+            lastTimestamp = performance.now();
+            
+            function animate(timestamp) {
+                if (!isPlaying) return;
+                
+                const deltaTime = (timestamp - lastTimestamp) / 1000;
+                lastTimestamp = timestamp;
+                
+                // 更新时间
+                const maxT = getMaxTime();
+                singleParams.t = Math.min(maxT, singleParams.t + deltaTime * animationSpeed);
+                
+                // 更新单过程模式控件
+                singleSliders.time.value = singleParams.t;
+                singleInputs.time.value = singleParams.t.toFixed(1);
+                
+                // 更新显示
+                drawMotion();
+                updateCharts();
+                updateInfoPanel();
+                updateStatusDisplay();
+                
+                // 更新关键时刻列表高亮
+                updateMomentsListHighlight();
+                
+                if (singleParams.t < maxT) {
+                    animationId = requestAnimationFrame(animate);
+                } else {
+                    stopAnimation();
+                }
+            }
+            
+            animationId = requestAnimationFrame(animate);
+        }
+        
+        // 停止动画
+        function stopAnimation() {
+            isPlaying = false;
+            playBtn.disabled = false;
+            pauseBtn.disabled = true;
+            if (animationId) {
+                cancelAnimationFrame(animationId);
+                animationId = null;
+            }
+        }
+        
+        // 重置动画（完全清空）
+        function resetAnimation() {
+            stopAnimation();
+            
+            // 重置单过程参数
+            singleParams = {
+                x0A: 0,
+                v0A: 10,
+                aA: 0,
+                x0B: 30,
+                v0B: 5,
+                aB: 0,
+                t: 0,
+                maxT: 20
+            };
+            
+            // 重置多过程
+            resetMultiProcess();
+            
+            // 重置复选框
+            brakeA.checked = false;
+            brakeB.checked = false;
+            document.getElementById('showAllMoments').checked = true;
+            document.getElementById('showVelocity').checked = true;
+            document.getElementById('showTrajectory').checked = true;
+            document.getElementById('showStopPosition').checked = true;
+            document.getElementById('showBrakeLight').checked = true;
+            document.getElementById('showProcessMarkers').checked = true;
+            
+            // 更新控件
+            updateInputsAndSliders();
+            
+            // 重新计算
+            calculateSpecialMoments();
+            
+            // 更新显示
+            drawMotion();
+            updateCharts();
+            updateInfoPanel();
+            updateMomentsList();
+        }
+        
+        // 回到起点（仅重置时间，不改变其他参数）
+        function backToStart() {
+            stopAnimation();
+            
+            singleParams.t = 0;
+            singleSliders.time.value = 0;
+            singleInputs.time.value = '0';
+            
+            // 更新显示
+            drawMotion();
+            updateCharts();
+            updateInfoPanel();
+            updateMomentsList();
+        }
+        
+        // 更新关键时刻列表高亮
+        function updateMomentsListHighlight() {
+            let t;
+            if (currentMode === 'single') {
+                t = singleParams.t;
+            } else {
+                t = singleParams.t;
+            }
+            
+            document.querySelectorAll('.moment-item').forEach((item, index) => {
+                const moment = specialMoments[index];
+                if (moment && Math.abs(t - moment.time) < 0.1) {
+                    item.classList.add('active');
+                } else {
+                    item.classList.remove('active');
+                }
+            });
+        }
+        
+        // ==================== 工具函数 ====================
+        
+        // 改变单过程参数值
+        function changeValue(param, delta) {
+            singleParams[param] += delta;
+            
+            // 限制范围
+            if (param.startsWith('x0')) {
+                singleParams[param] = Math.max(-50, Math.min(100, singleParams[param]));
+            } else if (param.startsWith('v0')) {
+                singleParams[param] = Math.max(0, Math.min(30, singleParams[param]));
+            } else if (param.startsWith('a')) {
+                singleParams[param] = Math.max(-5, Math.min(5, singleParams[param]));
+            } else if (param === 't') {
+                singleParams[param] = Math.max(0, Math.min(singleParams.maxT, singleParams[param]));
+            }
+            
+            // 更新控件
+            singleInputs[param].value = singleParams[param].toFixed(1);
+            singleSliders[param].value = singleParams[param];
+            
+            // 重新计算
+            calculateSpecialMoments();
+            
+            // 停止动画
+            stopAnimation();
+            
+            // 更新显示
+            drawMotion();
+            updateCharts();
+            updateInfoPanel();
+            updateMomentsList();
+        }
+        
+        // 改变多过程参数值
+        function changeMultiValue(param, delta) {
+            const process = multiProcesses[currentProcessIndex];
+            
+            if (param === 'duration') {
+                process.duration = Math.max(1, Math.min(20, process.duration + delta));
+                multiInputs.duration.value = process.duration.toFixed(1);
+                multiSliders.duration.value = process.duration;
+            } else if (param === 'x0A' || param === 'x0B') {
+                // 初始位置（仅过程1有效）
+                if (currentProcessIndex === 0) {
+                    process.params[param] += delta;
+                    
+                    // 限制范围
+                    process.params[param] = Math.max(-50, Math.min(100, process.params[param]));
+                    
+                    // 更新控件
+                    multiInputs[param].value = process.params[param].toFixed(1);
+                    multiSliders[param].value = process.params[param];
+                }
+            } else {
+                process.params[param] += delta;
+                
+                // 限制范围
+                if (param.startsWith('v0')) {
+                    process.params[param] = Math.max(0, Math.min(30, process.params[param]));
+                } else if (param.startsWith('a')) {
+                    process.params[param] = Math.max(-5, Math.min(5, process.params[param]));
+                }
+                
+                // 更新控件
+                multiInputs[param].value = process.params[param].toFixed(1);
+                multiSliders[param].value = process.params[param];
+            }
+            
+            // 重新计算
+            calculateProcessStates();
+            calculateSpecialMoments();
+            
+            // 停止动画
+            stopAnimation();
+            
+            // 更新显示
+            drawMotion();
+            updateCharts();
+            updateInfoPanel();
+            updateMomentsList();
+        }
+        
+        // 随机生成
+        function randomGenerate() {
+            stopAnimation();
+            
+            if (currentMode === 'single') {
+                // 随机参数
+                singleParams.x0A = Math.floor(Math.random() * 50) - 10;
+                singleParams.v0A = 5 + Math.random() * 15;
+                singleParams.aA = (Math.random() > 0.5 ? 1 : -1) * Math.random() * 3;
+                
+                singleParams.x0B = singleParams.x0A + 20 + Math.random() * 30;
+                singleParams.v0B = Math.max(1, singleParams.v0A - 5 + Math.random() * 10);
+                singleParams.aB = (Math.random() > 0.5 ? 1 : -1) * Math.random() * 2;
+                
+                // 随机刹车
+                brakeA.checked = Math.random() > 0.5;
+                brakeB.checked = Math.random() > 0.5;
+            } else {
+                // 随机生成多过程
+                const numProcesses = Math.floor(Math.random() * 3) + 2; // 2-4个过程
+                multiProcesses = [];
+                
+                for (let i = 0; i < numProcesses; i++) {
+                    if (i === 0) {
+                        // 过程1：包含初始位置
+                        multiProcesses.push({
+                            duration: 3 + Math.random() * 7, // 3-10秒
+                            params: {
+                                x0A: Math.floor(Math.random() * 50) - 10,
+                                x0B: Math.floor(Math.random() * 50) + 20,
+                                v0A: 5 + Math.random() * 15,
+                                aA: (Math.random() > 0.5 ? 1 : -1) * Math.random() * 2,
+                                v0B: Math.max(1, 5 + Math.random() * 10),
+                                aB: (Math.random() > 0.5 ? 1 : -1) * Math.random() * 1.5,
+                                brakeA: Math.random() > 0.7,
+                                brakeB: Math.random() > 0.7
+                            }
+                        });
+                    } else {
+                        // 后续过程：不包含初始位置
+                        const lastProcess = multiProcesses[i-1];
+                        multiProcesses.push({
+                            duration: 3 + Math.random() * 7, // 3-10秒
+                            params: {
+                                x0A: null,
+                                x0B: null,
+                                v0A: lastProcess.params.v0A,
+                                aA: (Math.random() > 0.5 ? 1 : -1) * Math.random() * 2,
+                                v0B: lastProcess.params.v0B,
+                                aB: (Math.random() > 0.5 ? 1 : -1) * Math.random() * 1.5,
+                                brakeA: Math.random() > 0.7,
+                                brakeB: Math.random() > 0.7
+                            }
+                        });
+                    }
+                }
+                
+                // 更新界面
+                updateProcessTabs();
+                switchProcess(0);
+            }
+            
+            // 重置时间
+            singleParams.t = 0;
+            
+            // 更新控件
+            updateInputsAndSliders();
+            
+            // 重新计算
+            if (currentMode === 'multi') {
+                calculateProcessStates();
+            }
+            calculateSpecialMoments();
+            
+            // 更新显示
+            drawMotion();
+            updateCharts();
+            updateInfoPanel();
+            updateMomentsList();
+        }
+        
+        // 预设场景
+        function setPreset(type) {
+            stopAnimation();
+            
+            switch(type) {
+                case 'chase': // 匀速追匀速
+                    singleParams.x0A = 0; singleParams.v0A = 12; singleParams.aA = 0;
+                    singleParams.x0B = 40; singleParams.v0B = 5; singleParams.aB = 0;
+                    brakeA.checked = false; brakeB.checked = false;
+                    break;
+                case 'accelerateChase': // 匀加速追匀速
+                    singleParams.x0A = 0; singleParams.v0A = 5; singleParams.aA = 2;
+                    singleParams.x0B = 50; singleParams.v0B = 8; singleParams.aB = 0;
+                    brakeA.checked = false; brakeB.checked = false;
+                    break;
+                case 'decelerateChase': // 匀减速追匀速
+                    singleParams.x0A = 0; singleParams.v0A = 15; singleParams.aA = -1;
+                    singleParams.x0B = 30; singleParams.v0B = 5; singleParams.aB = 0;
+                    brakeA.checked = false; brakeB.checked = false;
+                    break;
+                case 'rearBrake': // 后车刹车问题
+                    singleParams.x0A = 0; singleParams.v0A = 20; singleParams.aA = -3;
+                    singleParams.x0B = 50; singleParams.v0B = 10; singleParams.aB = 0;
+                    brakeA.checked = true; brakeB.checked = false;
+                    break;
+                case 'bothBrake': // 两车同时刹车
+                    singleParams.x0A = 0; singleParams.v0A = 25; singleParams.aA = -3;
+                    singleParams.x0B = 60; singleParams.v0B = 15; singleParams.aB = -2;
+                    brakeA.checked = true; brakeB.checked = true;
+                    break;
+                case 'cannotCatch': // 永远追不上
+                    singleParams.x0A = 0; singleParams.v0A = 5; singleParams.aA = 0;
+                    singleParams.x0B = 30; singleParams.v0B = 10; singleParams.aB = 0;
+                    brakeA.checked = false; brakeB.checked = false;
+                    break;
+                case 'meetAfterBrake': // 刹车后相遇
+                    singleParams.x0A = 0; singleParams.v0A = 30; singleParams.aA = -2;
+                    singleParams.x0B = 80; singleParams.v0B = 15; singleParams.aB = 0;
+                    brakeA.checked = true; brakeB.checked = false;
+                    break;
+                case 'multiProcessDemo': // 多过程演示
+                    switchMode('multi');
+                    multiProcesses = [
+                        {
+                            duration: 5,
+                            params: {
+                                x0A: 0,
+                                x0B: 40,
+                                v0A: 10, 
+                                aA: 0, 
+                                v0B: 5, 
+                                aB: 0,
+                                brakeA: false, 
+                                brakeB: false
+                            }
+                        },
+                        {
+                            duration: 5,
+                            params: {
+                                x0A: null,
+                                x0B: null,
+                                v0A: 10, 
+                                aA: -2, 
+                                v0B: 5, 
+                                aB: 0,
+                                brakeA: true, 
+                                brakeB: false
+                            }
+                        },
+                        {
+                            duration: 5,
+                            params: {
+                                x0A: null,
+                                x0B: null,
+                                v0A: 0, 
+                                aA: 1, 
+                                v0B: 5, 
+                                aB: -1,
+                                brakeA: false, 
+                                brakeB: true
+                            }
+                        }
+                    ];
+                    updateProcessTabs();
+                    switchProcess(0);
+                    calculateProcessStates();
+                    break;
+            }
+            
+            // 重置时间
+            singleParams.t = 0;
+            
+            // 更新控件
+            updateInputsAndSliders();
+            
+            // 重新计算
+            calculateSpecialMoments();
+            
+            // 更新显示
+            drawMotion();
+            updateCharts();
+            updateInfoPanel();
+            updateMomentsList();
+        }
+        
+        // ==================== 事件绑定 ====================
+        
+        // 绑定事件
+        function bindEvents() {
+            // 单过程滑块事件
+            for (const key in singleSliders) {
+                singleSliders[key].addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    if (key === 'time') {
+                        singleParams.t = value;
+                        singleInputs.time.value = value.toFixed(1);
+                    } else {
+                        singleParams[key] = value;
+                        singleInputs[key].value = value.toFixed(1);
+                        calculateSpecialMoments();
+                    }
+                    stopAnimation();
+                    drawMotion();
+                    updateCharts();
+                    updateInfoPanel();
+                });
+            }
+            
+            // 单过程输入框事件
+            for (const key in singleInputs) {
+                singleInputs[key].addEventListener('change', function() {
+                    let value = parseFloat(this.value) || 0;
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    value = Math.max(min, Math.min(max, value));
+                    
+                    if (key === 'time') {
+                        singleParams.t = value;
+                        singleSliders.time.value = value;
+                    } else {
+                        singleParams[key] = value;
+                        singleSliders[key].value = value;
+                        calculateSpecialMoments();
+                    }
+                    stopAnimation();
+                    drawMotion();
+                    updateCharts();
+                    updateInfoPanel();
+                });
+            }
+            
+            // 多过程滑块事件
+            for (const key in multiSliders) {
+                multiSliders[key].addEventListener('input', function() {
+                    const value = parseFloat(this.value);
+                    const process = multiProcesses[currentProcessIndex];
+                    
+                    if (key === 'duration') {
+                        process.duration = value;
+                        multiInputs.duration.value = value.toFixed(1);
+                    } else if (key === 'x0A' || key === 'x0B') {
+                        // 初始位置（仅过程1有效）
+                        if (currentProcessIndex === 0) {
+                            process.params[key] = value;
+                            multiInputs[key].value = value.toFixed(1);
+                        }
+                    } else {
+                        process.params[key] = value;
+                        multiInputs[key].value = value.toFixed(1);
+                    }
+                    
+                    calculateProcessStates();
+                    calculateSpecialMoments();
+                    stopAnimation();
+                    drawMotion();
+                    updateCharts();
+                    updateInfoPanel();
+                });
+            }
+            
+            // 多过程输入框事件
+            for (const key in multiInputs) {
+                multiInputs[key].addEventListener('change', function() {
+                    let value = parseFloat(this.value) || 0;
+                    const min = parseFloat(this.min);
+                    const max = parseFloat(this.max);
+                    value = Math.max(min, Math.min(max, value));
+                    
+                    const process = multiProcesses[currentProcessIndex];
+                    
+                    if (key === 'duration') {
+                        process.duration = value;
+                        multiSliders.duration.value = value;
+                    } else if (key === 'x0A' || key === 'x0B') {
+                        // 初始位置（仅过程1有效）
+                        if (currentProcessIndex === 0) {
+                            process.params[key] = value;
+                            multiSliders[key].value = value;
+                        }
+                    } else {
+                        process.params[key] = value;
+                        multiSliders[key].value = value;
+                    }
+                    
+                    calculateProcessStates();
+                    calculateSpecialMoments();
+                    stopAnimation();
+                    drawMotion();
+                    updateCharts();
+                    updateInfoPanel();
+                });
+            }
+            
+            // 多过程复选框事件
+            multiBrakeA.addEventListener('change', () => {
+                multiProcesses[currentProcessIndex].params.brakeA = multiBrakeA.checked;
+                calculateSpecialMoments();
+                drawMotion();
+            });
+            
+            multiBrakeB.addEventListener('change', () => {
+                multiProcesses[currentProcessIndex].params.brakeB = multiBrakeB.checked;
+                calculateSpecialMoments();
+                drawMotion();
+            });
+            
+            // 按钮事件
+            playBtn.addEventListener('click', startAnimation);
+            pauseBtn.addEventListener('click', stopAnimation);
+            resetBtn.addEventListener('click', resetAnimation);
+            toStartBtn.addEventListener('click', backToStart);
+            randomBtn.addEventListener('click', randomGenerate);
+            
+            // 复选框事件
+            brakeA.addEventListener('change', () => {
+                calculateSpecialMoments();
+                drawMotion();
+            });
+            
+            brakeB.addEventListener('change', () => {
+                calculateSpecialMoments();
+                drawMotion();
+            });
+            
+            // 显示选项事件
+            document.getElementById('showAllMoments').addEventListener('change', drawMotion);
+            document.getElementById('showVelocity').addEventListener('change', drawMotion);
+            document.getElementById('showTrajectory').addEventListener('change', drawMotion);
+            document.getElementById('showStopPosition').addEventListener('change', drawMotion);
+            document.getElementById('showBrakeLight').addEventListener('change', drawMotion);
+            document.getElementById('showProcessMarkers').addEventListener('change', drawMotion);
+            
+            // 窗口大小变化
+            window.addEventListener('resize', () => {
+                const container = canvas.parentElement;
+                canvas.width = container.clientWidth;
+                canvas.height = 300;
+                drawMotion();
+                drawProcessMarkers();
+                
+                if (sChart) sChart.resize();
+                if (vChart) vChart.resize();
+                if (aChart) aChart.resize();
+                if (dChart) dChart.resize();
+            });
+        }
+        
+        // ==================== 初始化 ====================
+        
+        // 页面加载完成后初始化
+        window.onload = init;
+    </script>
+</body>
+</html>
