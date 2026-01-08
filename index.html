@@ -351,6 +351,11 @@
             border-radius: 8px;
             background-color: #f8f9fa;
             border: 1px solid #eaeef2;
+            cursor: grab;
+        }
+        
+        #motionCanvas:active {
+            cursor: grabbing;
         }
         
         .special-moments {
@@ -726,13 +731,48 @@
             margin-top: 5px;
             font-style: italic;
         }
+        
+        /* 视图控制样式 */
+        .view-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        
+        .view-controls select {
+            flex: 1;
+            padding: 6px 10px;
+            border: 1px solid #ddd;
+            border-radius: 4px;
+            background-color: white;
+            font-size: 14px;
+        }
+        
+        .view-controls select:focus {
+            outline: none;
+            border-color: #4b6cb7;
+            box-shadow: 0 0 0 2px rgba(75, 108, 183, 0.2);
+        }
+        
+        .scale-indicator {
+            position: absolute;
+            bottom: 10px;
+            right: 10px;
+            background-color: rgba(255, 255, 255, 0.8);
+            padding: 5px 10px;
+            border-radius: 4px;
+            font-size: 12px;
+            color: #7f8c8d;
+            border: 1px solid #e0e0e0;
+        }
     </style>
 </head>
 <body>
     <div class="container">
         <header>
             <h1>高中物理AI情境探究平台</h1>
-            <p class="subtitle">追及相遇问题动态生成系统</p>
+            <p class="subtitle">追及相遇问题动态生成系统 - 扩展位移范围版本</p>
         </header>
         
         <div class="main-content">
@@ -760,25 +800,25 @@
                             <div class="control-group">
                                 <label class="control-label">初始位置 x₀ (m):</label>
                                 <div class="number-input-container">
-                                    <input type="number" id="x0AInput" class="number-input" min="-50" max="100" value="0" step="1">
+                                    <input type="number" id="x0AInput" class="number-input" min="-200" max="400" value="0" step="1">
                                     <div class="input-buttons">
                                         <div class="input-btn up" onclick="changeValue('x0A', 1)">+</div>
                                         <div class="input-btn down" onclick="changeValue('x0A', -1)">-</div>
                                     </div>
                                 </div>
-                                <input type="range" id="x0A" min="-50" max="100" value="0" step="1">
+                                <input type="range" id="x0A" min="-200" max="400" value="0" step="1">
                             </div>
                             
                             <div class="control-group">
                                 <label class="control-label">初速度 v₀ (m/s):</label>
                                 <div class="number-input-container">
-                                    <input type="number" id="v0AInput" class="number-input" min="0" max="30" value="10" step="0.5">
+                                    <input type="number" id="v0AInput" class="number-input" min="0" max="50" value="10" step="0.5">
                                     <div class="input-buttons">
                                         <div class="input-btn up" onclick="changeValue('v0A', 0.5)">+</div>
                                         <div class="input-btn down" onclick="changeValue('v0A', -0.5)">-</div>
                                     </div>
                                 </div>
-                                <input type="range" id="v0A" min="0" max="30" value="10" step="0.5">
+                                <input type="range" id="v0A" min="0" max="50" value="10" step="0.5">
                             </div>
                             
                             <div class="control-group">
@@ -810,25 +850,25 @@
                             <div class="control-group">
                                 <label class="control-label">初始位置 x₀ (m):</label>
                                 <div class="number-input-container">
-                                    <input type="number" id="x0BInput" class="number-input" min="-50" max="100" value="30" step="1">
+                                    <input type="number" id="x0BInput" class="number-input" min="-200" max="400" value="30" step="1">
                                     <div class="input-buttons">
                                         <div class="input-btn up" onclick="changeValue('x0B', 1)">+</div>
                                         <div class="input-btn down" onclick="changeValue('x0B', -1)">-</div>
                                     </div>
                                 </div>
-                                <input type="range" id="x0B" min="-50" max="100" value="30" step="1">
+                                <input type="range" id="x0B" min="-200" max="400" value="30" step="1">
                             </div>
                             
                             <div class="control-group">
                                 <label class="control-label">初速度 v₀ (m/s):</label>
                                 <div class="number-input-container">
-                                    <input type="number" id="v0BInput" class="number-input" min="0" max="30" value="5" step="0.5">
+                                    <input type="number" id="v0BInput" class="number-input" min="0" max="50" value="5" step="0.5">
                                     <div class="input-buttons">
                                         <div class="input-btn up" onclick="changeValue('v0B', 0.5)">+</div>
                                         <div class="input-btn down" onclick="changeValue('v0B', -0.5)">-</div>
                                     </div>
                                 </div>
-                                <input type="range" id="v0B" min="0" max="30" value="5" step="0.5">
+                                <input type="range" id="v0B" min="0" max="50" value="5" step="0.5">
                             </div>
                             
                             <div class="control-group">
@@ -854,9 +894,9 @@
                     
                     <div class="time-control">
                         <div class="time-label">时间 t (s):</div>
-                        <input type="range" id="timeSlider" min="0" max="20" value="0" step="0.1">
+                        <input type="range" id="timeSlider" min="0" max="50" value="0" step="0.1">
                         <div class="number-input-container" style="min-width: 100px;">
-                            <input type="number" id="timeInput" class="number-input" min="0" max="20" value="0" step="0.1">
+                            <input type="number" id="timeInput" class="number-input" min="0" max="50" value="0" step="0.1">
                         </div>
                     </div>
                 </div>
@@ -875,9 +915,9 @@
                         
                         <div class="process-time">
                             <div class="process-time-label">持续时间:</div>
-                            <input type="range" id="processDuration" min="1" max="20" value="10" step="0.5" class="process-duration">
+                            <input type="range" id="processDuration" min="1" max="30" value="10" step="0.5" class="process-duration">
                             <div class="number-input-container" style="min-width: 80px;">
-                                <input type="number" id="processDurationInput" class="number-input" min="1" max="20" value="10" step="0.5">
+                                <input type="number" id="processDurationInput" class="number-input" min="1" max="30" value="10" step="0.5">
                                 <span style="font-size: 12px; color: #7f8c8d;">s</span>
                             </div>
                         </div>
@@ -892,26 +932,26 @@
                                 <div class="control-group" id="multiX0AGroup">
                                     <label class="control-label">初始位置 x₀ (m):</label>
                                     <div class="number-input-container">
-                                        <input type="number" id="multiX0AInput" class="number-input" min="-50" max="100" value="0" step="1">
+                                        <input type="number" id="multiX0AInput" class="number-input" min="-200" max="400" value="0" step="1">
                                         <div class="input-buttons">
                                             <div class="input-btn up" onclick="changeMultiValue('x0A', 1)">+</div>
                                             <div class="input-btn down" onclick="changeMultiValue('x0A', -1)">-</div>
                                         </div>
                                     </div>
-                                    <input type="range" id="multiX0A" min="-50" max="100" value="0" step="1">
+                                    <input type="range" id="multiX0A" min="-200" max="400" value="0" step="1">
                                     <div class="initial-position-note" id="multiX0ANote">仅过程1可设置初始位置</div>
                                 </div>
                                 
                                 <div class="control-group">
                                     <label class="control-label">初速度 v₀ (m/s):</label>
                                     <div class="number-input-container">
-                                        <input type="number" id="multiV0AInput" class="number-input" min="0" max="30" value="10" step="0.5">
+                                        <input type="number" id="multiV0AInput" class="number-input" min="0" max="50" value="10" step="0.5">
                                         <div class="input-buttons">
                                             <div class="input-btn up" onclick="changeMultiValue('v0A', 0.5)">+</div>
                                             <div class="input-btn down" onclick="changeMultiValue('v0A', -0.5)">-</div>
                                         </div>
                                     </div>
-                                    <input type="range" id="multiV0A" min="0" max="30" value="10" step="0.5">
+                                    <input type="range" id="multiV0A" min="0" max="50" value="10" step="0.5">
                                     <div class="initial-position-note" id="multiV0ANote">过程1的初速度，后续过程继承上一过程末速度</div>
                                 </div>
                                 
@@ -944,26 +984,26 @@
                                 <div class="control-group" id="multiX0BGroup">
                                     <label class="control-label">初始位置 x₀ (m):</label>
                                     <div class="number-input-container">
-                                        <input type="number" id="multiX0BInput" class="number-input" min="-50" max="100" value="30" step="1">
+                                        <input type="number" id="multiX0BInput" class="number-input" min="-200" max="400" value="30" step="1">
                                         <div class="input-buttons">
                                             <div class="input-btn up" onclick="changeMultiValue('x0B', 1)">+</div>
                                             <div class="input-btn down" onclick="changeMultiValue('x0B', -1)">-</div>
                                         </div>
                                     </div>
-                                    <input type="range" id="multiX0B" min="-50" max="100" value="30" step="1">
+                                    <input type="range" id="multiX0B" min="-200" max="400" value="30" step="1">
                                     <div class="initial-position-note" id="multiX0BNote">仅过程1可设置初始位置</div>
                                 </div>
                                 
                                 <div class="control-group">
                                     <label class="control-label">初速度 v₀ (m/s):</label>
                                     <div class="number-input-container">
-                                        <input type="number" id="multiV0BInput" class="number-input" min="0" max="30" value="5" step="0.5">
+                                        <input type="number" id="multiV0BInput" class="number-input" min="0" max="50" value="5" step="0.5">
                                         <div class="input-buttons">
                                             <div class="input-btn up" onclick="changeMultiValue('v0B', 0.5)">+</div>
                                             <div class="input-btn down" onclick="changeMultiValue('v0B', -0.5)">-</div>
                                         </div>
                                     </div>
-                                    <input type="range" id="multiV0B" min="0" max="30" value="5" step="0.5">
+                                    <input type="range" id="multiV0B" min="0" max="50" value="5" step="0.5">
                                     <div class="initial-position-note" id="multiV0BNote">过程1的初速度，后续过程继承上一过程末速度</div>
                                 </div>
                                 
@@ -1001,6 +1041,47 @@
                             3. 总运动时间 = 所有过程持续时间之和<br>
                             4. 可以添加最多5个过程
                         </div>
+                    </div>
+                </div>
+                
+                <!-- 视图控制部分 -->
+                <div class="section">
+                    <h2 class="section-title">视图控制</h2>
+                    
+                    <div class="buttons" style="margin-bottom: 10px;">
+                        <button id="zoomInBtn" class="secondary" title="放大视图">🔍 放大</button>
+                        <button id="zoomOutBtn" class="secondary" title="缩小视图">🔍 缩小</button>
+                        <button id="zoomFitBtn" class="secondary" title="适合视图">📐 适合视图</button>
+                        <button id="resetViewBtn" class="secondary" title="重置视图">↺ 重置视图</button>
+                    </div>
+                    
+                    <div class="view-controls">
+                        <div style="display: flex; align-items: center; gap: 10px;">
+                            <label style="font-size: 14px; color: #555;">显示模式:</label>
+                            <select id="viewRangeSelect">
+                                <option value="auto">自动调整</option>
+                                <option value="fixed">固定范围 (-50~150m)</option>
+                                <option value="followCurrent">跟随当前位置</option>
+                                <option value="showAll">显示所有内容</option>
+                                <option value="largeDisplacement">大位移模式</option>
+                            </select>
+                        </div>
+                        
+                        <div style="font-size: 13px; color: #7f8c8d; padding: 8px; background-color: #f8f9fa; border-radius: 6px;">
+                            <strong>视图信息:</strong> 
+                            <span id="viewInfo">范围: -50m ~ 150m (200m)</span>
+                            <br>
+                            <span id="scaleInfo">比例尺: 1:20</span>
+                        </div>
+                    </div>
+                    
+                    <div style="font-size: 12px; color: #95a5a6; margin-top: 10px;">
+                        <strong>操作提示:</strong>
+                        <ul style="margin-left: 15px; margin-top: 5px;">
+                            <li>鼠标滚轮: 缩放视图</li>
+                            <li>鼠标拖拽: 平移视图</li>
+                            <li>双击物体: 居中显示该物体</li>
+                        </ul>
                     </div>
                 </div>
                 
@@ -1066,6 +1147,10 @@
                     <div id="criticalInfo" class="critical-condition" style="display: none; margin-top: 15px;">
                         ⚠ <span id="criticalText"></span>
                     </div>
+                    
+                    <div id="largeDisplacementWarning" class="critical-condition" style="display: none; margin-top: 10px; background-color: rgba(241, 196, 15, 0.1);">
+                        ⚠ <span id="largeDisplacementText"></span>
+                    </div>
                 </div>
                 
                 <div class="section">
@@ -1097,6 +1182,9 @@
                         <label class="checkbox-label">
                             <input type="checkbox" id="showProcessMarkers" checked> 显示过程标记
                         </label>
+                        <label class="checkbox-label">
+                            <input type="checkbox" id="showScaleIndicator" checked> 显示比例尺
+                        </label>
                     </div>
                     
                     <div class="preset-scenarios">
@@ -1108,6 +1196,7 @@
                         <button class="preset-btn" onclick="setPreset('bothBrake')">两车同时刹车</button>
                         <button class="preset-btn" onclick="setPreset('cannotCatch')">永远追不上</button>
                         <button class="preset-btn" onclick="setPreset('meetAfterBrake')">刹车后相遇</button>
+                        <button class="preset-btn" onclick="setPreset('largeDisplacement')">大位移演示</button>
                         <button class="preset-btn" onclick="setPreset('multiProcessDemo')">多过程演示</button>
                     </div>
                 </div>
@@ -1148,6 +1237,7 @@
                         <div style="position: relative;">
                             <canvas id="motionCanvas" width="800" height="300"></canvas>
                             <div id="processMarkers" class="process-markers"></div>
+                            <div id="scaleIndicator" class="scale-indicator"></div>
                         </div>
                     </div>
                     
@@ -1184,8 +1274,8 @@
         </div>
         
         <footer>
-            <p>© 2025 高中物理教学工具 - 多过程追及相遇与刹车问题模拟器</p>
-            <p>设计原理: x = x₀ + v₀·t + ½·a·t² (当v≥0) | 刹车模式: 速度减为0即停止运动 | 支持单过程和多过程模式</p>
+            <p>© 2025 高中物理教学工具 - 多过程追及相遇与刹车问题模拟器 - 扩展位移范围版本</p>
+            <p>设计原理: x = x₀ + v₀·t + ½·a·t² (当v≥0) | 刹车模式: 速度减为0即停止运动 | 支持单过程和多过程模式 | 支持大位移显示</p>
         </footer>
     </div>
 
@@ -1200,7 +1290,7 @@
             v0B: 5,    // B初速度 (m/s)
             aB: 0,     // B加速度 (m/s²)
             t: 0,      // 当前时间 (s)
-            maxT: 20   // 最大时间 (s)
+            maxT: 50   // 最大时间 (s) - 扩展为50秒
         };
         
         // 多过程模式数据结构
@@ -1240,6 +1330,17 @@
         
         // 关键时刻数据
         let specialMoments = [];
+        
+        // ==================== 视图控制变量 ====================
+        let viewMode = 'auto';  // 'auto', 'fixed', 'followCurrent', 'showAll', 'largeDisplacement'
+        let zoomLevel = 1.0;    // 缩放级别 (1.0 = 200米范围)
+        let viewCenter = 0;     // 视图中心位置 (米)
+        let isDragging = false; // 是否正在拖拽
+        let lastMouseX = 0;     // 上次鼠标X位置
+        let lastMouseY = 0;     // 上次鼠标Y位置
+        
+        // 鼠标滚轮缩放灵敏度
+        const ZOOM_SENSITIVITY = 0.001;
         
         // ==================== DOM元素 ====================
         const canvas = document.getElementById('motionCanvas');
@@ -1312,6 +1413,13 @@
         const toStartBtn = document.getElementById('toStartBtn');
         const randomBtn = document.getElementById('randomBtn');
         
+        // 视图控制按钮
+        const zoomInBtn = document.getElementById('zoomInBtn');
+        const zoomOutBtn = document.getElementById('zoomOutBtn');
+        const zoomFitBtn = document.getElementById('zoomFitBtn');
+        const resetViewBtn = document.getElementById('resetViewBtn');
+        const viewRangeSelect = document.getElementById('viewRangeSelect');
+        
         // 状态显示
         const statusA = document.getElementById('statusA');
         const statusB = document.getElementById('statusB');
@@ -1321,6 +1429,13 @@
         
         // 过程标记容器
         const processMarkers = document.getElementById('processMarkers');
+        
+        // 比例尺指示器
+        const scaleIndicator = document.getElementById('scaleIndicator');
+        
+        // 警告元素
+        const largeDisplacementWarning = document.getElementById('largeDisplacementWarning');
+        const largeDisplacementText = document.getElementById('largeDisplacementText');
         
         // 图表实例
         let sChart, vChart, aChart, dChart;
@@ -1339,7 +1454,414 @@
             // 重置所有数据
             resetAnimation();
             
+            // 更新视图信息
+            updateViewInfo();
+            
             console.log("初始化完成");
+        }
+        
+        // ==================== 视图控制函数 ====================
+        
+        // 计算自动调整的视图范围
+        function calculateAutoViewRange() {
+            const t = currentMode === 'single' ? singleParams.t : singleParams.t;
+            const maxT = getMaxTime();
+            
+            let minX = Infinity;
+            let maxX = -Infinity;
+            
+            // 收集所有需要显示的位置
+            const positions = [];
+            
+            // 当前物体位置
+            const xA = calculatePosition('A', t);
+            const xB = calculatePosition('B', t);
+            positions.push(xA, xB);
+            
+            // 初始位置
+            let initialXA, initialXB;
+            if (currentMode === 'single') {
+                initialXA = singleParams.x0A;
+                initialXB = singleParams.x0B;
+            } else {
+                initialXA = multiProcesses[0].params.x0A !== null ? multiProcesses[0].params.x0A : 0;
+                initialXB = multiProcesses[0].params.x0B !== null ? multiProcesses[0].params.x0B : 30;
+            }
+            positions.push(initialXA, initialXB);
+            
+            // 停车位置
+            if (objectStates.A.stopPosition !== null) positions.push(objectStates.A.stopPosition);
+            if (objectStates.B.stopPosition !== null) positions.push(objectStates.B.stopPosition);
+            
+            // 关键时刻的位置
+            specialMoments.forEach(moment => {
+                if (moment.time <= maxT) {
+                    positions.push(
+                        calculatePosition('A', moment.time),
+                        calculatePosition('B', moment.time)
+                    );
+                }
+            });
+            
+            // 轨迹采样点（用于显示轨迹）
+            if (document.getElementById('showTrajectory').checked) {
+                const step = maxT / 20;
+                for (let time = 0; time <= maxT; time += step) {
+                    positions.push(
+                        calculatePosition('A', time),
+                        calculatePosition('B', time)
+                    );
+                }
+            }
+            
+            // 计算最小和最大值
+            positions.forEach(pos => {
+                if (pos !== null && !isNaN(pos)) {
+                    minX = Math.min(minX, pos);
+                    maxX = Math.max(maxX, pos);
+                }
+            });
+            
+            // 如果没有有效数据，使用默认范围
+            if (!isFinite(minX) || !isFinite(maxX)) {
+                minX = -50;
+                maxX = 150;
+            }
+            
+            // 确保最小范围
+            const rangeWidth = maxX - minX;
+            if (rangeWidth < 20) {
+                const center = (minX + maxX) / 2;
+                minX = center - 10;
+                maxX = center + 10;
+            }
+            
+            // 添加边界余量
+            const margin = Math.max(20, rangeWidth * 0.1);
+            minX -= margin;
+            maxX += margin;
+            
+            // 扩展限制范围（支持更大位移）
+            minX = Math.max(-2000, minX);
+            maxX = Math.min(2000, maxX);
+            
+            // 对于非常大的位移，可以进一步放宽限制
+            if (maxX - minX > 1000) {
+                minX = Math.max(-5000, minX);
+                maxX = Math.min(5000, maxX);
+            }
+            
+            return { minX, maxX };
+        }
+        
+        // 计算"显示所有内容"的视图范围
+        function calculateShowAllViewRange() {
+            const maxT = getMaxTime();
+            
+            let minX = Infinity;
+            let maxX = -Infinity;
+            
+            // 采样时间点
+            const step = maxT / 100;
+            for (let t = 0; t <= maxT; t += step) {
+                const xA = calculatePosition('A', t);
+                const xB = calculatePosition('B', t);
+                minX = Math.min(minX, xA, xB);
+                maxX = Math.max(maxX, xA, xB);
+            }
+            
+            // 检查关键时刻
+            specialMoments.forEach(moment => {
+                const xA = calculatePosition('A', moment.time);
+                const xB = calculatePosition('B', moment.time);
+                minX = Math.min(minX, xA, xB);
+                maxX = Math.max(maxX, xA, xB);
+            });
+            
+            // 检查停车位置
+            if (objectStates.A.stopPosition !== null) {
+                minX = Math.min(minX, objectStates.A.stopPosition);
+                maxX = Math.max(maxX, objectStates.A.stopPosition);
+            }
+            if (objectStates.B.stopPosition !== null) {
+                minX = Math.min(minX, objectStates.B.stopPosition);
+                maxX = Math.max(maxX, objectStates.B.stopPosition);
+            }
+            
+            // 如果没有有效数据，使用默认范围
+            if (!isFinite(minX) || !isFinite(maxX)) {
+                minX = -50;
+                maxX = 150;
+            }
+            
+            // 确保最小范围
+            const rangeWidth = maxX - minX;
+            if (rangeWidth < 20) {
+                const center = (minX + maxX) / 2;
+                minX = center - 10;
+                maxX = center + 10;
+            }
+            
+            // 添加边界余量
+            const margin = Math.max(20, rangeWidth * 0.1);
+            minX -= margin;
+            maxX += margin;
+            
+            // 扩展限制范围
+            minX = Math.max(-5000, minX);
+            maxX = Math.min(5000, maxX);
+            
+            return { minX, maxX };
+        }
+        
+        // 根据当前模式获取视图范围
+        function getViewRange() {
+            const t = currentMode === 'single' ? singleParams.t : singleParams.t;
+            
+            switch (viewMode) {
+                case 'fixed':
+                    return { minX: -50, maxX: 150 };
+                    
+                case 'followCurrent':
+                    const xA = calculatePosition('A', t);
+                    const xB = calculatePosition('B', t);
+                    const center = (xA + xB) / 2;
+                    const rangeWidth = 200 / zoomLevel;
+                    return {
+                        minX: center - rangeWidth / 2,
+                        maxX: center + rangeWidth / 2
+                    };
+                    
+                case 'showAll':
+                    const range = calculateShowAllViewRange();
+                    // 调整缩放级别以显示整个范围
+                    const neededZoom = 200 / (range.maxX - range.minX);
+                    zoomLevel = Math.max(0.1, Math.min(neededZoom, 10));
+                    viewCenter = (range.minX + range.maxX) / 2;
+                    return range;
+                    
+                case 'largeDisplacement':
+                    // 大位移模式：显示更大的范围
+                    const maxT = getMaxTime();
+                    let minX = Infinity;
+                    let maxX = -Infinity;
+                    
+                    // 只检查初始和最终位置
+                    const positions = [
+                        calculatePosition('A', 0),
+                        calculatePosition('B', 0),
+                        calculatePosition('A', maxT),
+                        calculatePosition('B', maxT)
+                    ];
+                    
+                    positions.forEach(pos => {
+                        if (!isNaN(pos)) {
+                            minX = Math.min(minX, pos);
+                            maxX = Math.max(maxX, pos);
+                        }
+                    });
+                    
+                    // 添加较大的边距
+                    const margin = Math.max(100, (maxX - minX) * 0.3);
+                    minX = minX - margin;
+                    maxX = maxX + margin;
+                    
+                    // 确保在合理范围内
+                    minX = Math.max(-10000, minX);
+                    maxX = Math.min(10000, maxX);
+                    
+                    // 调整缩放级别
+                    const largeZoom = 200 / (maxX - minX);
+                    zoomLevel = Math.max(0.05, Math.min(largeZoom, 10));
+                    viewCenter = (minX + maxX) / 2;
+                    
+                    return { minX, maxX };
+                    
+                case 'auto':
+                default:
+                    const autoRange = calculateAutoViewRange();
+                    // 调整缩放级别以显示整个范围
+                    const autoNeededZoom = 200 / (autoRange.maxX - autoRange.minX);
+                    zoomLevel = Math.max(0.1, Math.min(autoNeededZoom, 10));
+                    viewCenter = (autoRange.minX + autoRange.maxX) / 2;
+                    return autoRange;
+            }
+        }
+        
+        // 坐标转换函数
+        function positionToCanvasX(x) {
+            const range = getViewRange();
+            const width = canvas.width;
+            
+            // 确保x在范围内（防止溢出）
+            x = Math.max(range.minX, Math.min(range.maxX, x));
+            
+            return 50 + (x - range.minX) / (range.maxX - range.minX) * (width - 100);
+        }
+        
+        function canvasXToPosition(canvasX) {
+            const range = getViewRange();
+            const width = canvas.width;
+            
+            // 确保canvasX在画布内
+            canvasX = Math.max(50, Math.min(width - 50, canvasX));
+            
+            return range.minX + (canvasX - 50) / (width - 100) * (range.maxX - range.minX);
+        }
+        
+        // 缩放函数
+        function zoomIn() {
+            zoomLevel *= 1.2;
+            zoomLevel = Math.min(zoomLevel, 20); // 最大缩放级别
+            drawMotion();
+            updateViewInfo();
+        }
+        
+        function zoomOut() {
+            zoomLevel *= 0.8;
+            zoomLevel = Math.max(zoomLevel, 0.05); // 最小缩放级别
+            drawMotion();
+            updateViewInfo();
+        }
+        
+        function zoomToFit() {
+            const range = calculateAutoViewRange();
+            const rangeWidth = range.maxX - range.minX;
+            zoomLevel = 200 / rangeWidth;
+            zoomLevel = Math.max(0.05, Math.min(zoomLevel, 20));
+            viewCenter = (range.minX + range.maxX) / 2;
+            viewMode = 'auto';
+            viewRangeSelect.value = 'auto';
+            drawMotion();
+            updateViewInfo();
+        }
+        
+        function resetView() {
+            zoomLevel = 1.0;
+            viewCenter = 0;
+            viewMode = 'fixed';
+            viewRangeSelect.value = 'fixed';
+            drawMotion();
+            updateViewInfo();
+        }
+        
+        // 更新视图信息显示
+        function updateViewInfo() {
+            const range = getViewRange();
+            const rangeWidth = range.maxX - range.minX;
+            const zoomPercent = (200 / rangeWidth * 100).toFixed(0);
+            
+            let modeText = '';
+            switch (viewMode) {
+                case 'fixed': modeText = '固定范围'; break;
+                case 'followCurrent': modeText = '跟随当前位置'; break;
+                case 'showAll': modeText = '显示所有内容'; break;
+                case 'largeDisplacement': modeText = '大位移模式'; break;
+                case 'auto': modeText = '自动调整'; break;
+            }
+            
+            // 格式化范围显示（对于大数字使用k表示千）
+            let minXText = range.minX.toFixed(1);
+            let maxXText = range.maxX.toFixed(1);
+            let rangeWidthText = rangeWidth.toFixed(1);
+            
+            if (Math.abs(range.minX) >= 1000) {
+                minXText = (range.minX / 1000).toFixed(2) + 'k';
+            }
+            if (Math.abs(range.maxX) >= 1000) {
+                maxXText = (range.maxX / 1000).toFixed(2) + 'k';
+            }
+            if (rangeWidth >= 1000) {
+                rangeWidthText = (rangeWidth / 1000).toFixed(2) + 'k';
+            }
+            
+            document.getElementById('viewInfo').innerHTML = 
+                `${modeText} | 范围: ${minXText}m ~ ${maxXText}m (${rangeWidthText}m) | 缩放: ${zoomPercent}%`;
+            
+            // 更新比例尺信息
+            updateScaleIndicator();
+            
+            // 检查是否需要显示大位移警告
+            checkLargeDisplacement();
+        }
+        
+        // 更新比例尺指示器
+        function updateScaleIndicator() {
+            if (!document.getElementById('showScaleIndicator').checked) {
+                scaleIndicator.style.display = 'none';
+                return;
+            }
+            
+            const range = getViewRange();
+            const rangeWidth = range.maxX - range.minX;
+            
+            // 计算合适的比例尺长度（像素）
+            const canvasWidth = canvas.width - 100; // 减去边距
+            let targetMeters = 100; // 默认目标显示100米
+            
+            // 根据范围调整比例尺长度
+            if (rangeWidth > 1000) targetMeters = 500;
+            if (rangeWidth > 5000) targetMeters = 1000;
+            if (rangeWidth > 10000) targetMeters = 2000;
+            if (rangeWidth > 20000) targetMeters = 5000;
+            
+            // 确保比例尺不会太长
+            targetMeters = Math.min(targetMeters, rangeWidth * 0.3);
+            
+            // 计算像素长度
+            const pixelLength = (targetMeters / rangeWidth) * canvasWidth;
+            
+            // 确保比例尺不会太短
+            if (pixelLength < 50) {
+                targetMeters = (50 / canvasWidth) * rangeWidth;
+            }
+            
+            // 格式化显示文本
+            let scaleText = `${targetMeters.toFixed(0)} m`;
+            if (targetMeters >= 1000) {
+                scaleText = `${(targetMeters / 1000).toFixed(1)} km`;
+            }
+            
+            // 更新比例尺指示器
+            scaleIndicator.innerHTML = `比例尺: ${scaleText}`;
+            scaleIndicator.style.display = 'block';
+            
+            // 更新比例信息
+            const scaleRatio = Math.round(rangeWidth / 10);
+            document.getElementById('scaleInfo').textContent = `比例尺: 1:${scaleRatio}`;
+        }
+        
+        // 检查大位移并显示警告
+        function checkLargeDisplacement() {
+            const maxT = getMaxTime();
+            const xA_start = calculatePosition('A', 0);
+            const xA_end = calculatePosition('A', maxT);
+            const xB_start = calculatePosition('B', 0);
+            const xB_end = calculatePosition('B', maxT);
+            
+            const maxDisplacement = Math.max(
+                Math.abs(xA_end - xA_start),
+                Math.abs(xB_end - xB_start)
+            );
+            
+            if (maxDisplacement > 500) {
+                largeDisplacementText.textContent = 
+                    `检测到大位移 (${maxDisplacement.toFixed(1)}m)，建议使用"大位移模式"或手动调整视图`;
+                largeDisplacementWarning.style.display = 'block';
+            } else {
+                largeDisplacementWarning.style.display = 'none';
+            }
+        }
+        
+        // 居中显示特定物体
+        function centerOnObject(obj) {
+            const t = currentMode === 'single' ? singleParams.t : singleParams.t;
+            const x = calculatePosition(obj, t);
+            viewCenter = x;
+            viewMode = 'followCurrent';
+            viewRangeSelect.value = 'followCurrent';
+            drawMotion();
+            updateViewInfo();
         }
         
         // ==================== 模式切换函数 ====================
@@ -2296,7 +2818,16 @@
             }
             
             // 检查初始时刻是否为极值点
-            const initialDistance = Math.abs(singleParams.x0A - singleParams.x0B);
+            let initialXA, initialXB;
+            if (currentMode === 'single') {
+                initialXA = singleParams.x0A;
+                initialXB = singleParams.x0B;
+            } else {
+                initialXA = multiProcesses[0].params.x0A !== null ? multiProcesses[0].params.x0A : 0;
+                initialXB = multiProcesses[0].params.x0B !== null ? multiProcesses[0].params.x0B : 30;
+            }
+            
+            const initialDistance = Math.abs(initialXA - initialXB);
             const t_initial_check = timeStep;
             const dist_initial_check = Math.abs(
                 calculatePosition('A', t_initial_check) - calculatePosition('B', t_initial_check)
@@ -2665,12 +3196,24 @@
             
             // 绘制过程标记
             drawProcessMarkers();
+            
+            // 绘制比例尺
+            drawScaleBar();
+            
+            // 更新视图信息
+            updateViewInfo();
         }
         
         // 绘制坐标轴
         function drawAxes() {
             const width = canvas.width;
             const height = canvas.height;
+            
+            // 获取当前视图范围
+            const range = getViewRange();
+            const minX = range.minX;
+            const maxX = range.maxX;
+            const rangeWidth = maxX - minX;
             
             // x轴（位置轴）
             ctx.beginPath();
@@ -2680,19 +3223,43 @@
             ctx.lineWidth = 2;
             ctx.stroke();
             
-            // 刻度
+            // 刻度（动态调整刻度密度）
             ctx.font = '14px Arial';
             ctx.fillStyle = '#7f8c8d';
             ctx.textAlign = 'center';
             ctx.textBaseline = 'top';
             
-            for (let i = -50; i <= 150; i += 20) {
-                const x = 50 + (i + 50) * (width - 100) / 200;
-                ctx.beginPath();
-                ctx.moveTo(x, height/2 - 5);
-                ctx.lineTo(x, height/2 + 5);
-                ctx.stroke();
-                ctx.fillText(i.toString(), x, height/2 + 10);
+            // 根据范围大小调整刻度间隔
+            let tickInterval = 20;
+            if (rangeWidth > 1000) tickInterval = 200;
+            else if (rangeWidth > 500) tickInterval = 100;
+            else if (rangeWidth > 200) tickInterval = 50;
+            else if (rangeWidth > 100) tickInterval = 20;
+            else if (rangeWidth > 50) tickInterval = 10;
+            else if (rangeWidth > 20) tickInterval = 5;
+            else tickInterval = 2;
+            
+            // 计算第一个刻度位置
+            const firstTick = Math.ceil(minX / tickInterval) * tickInterval;
+            
+            for (let x = firstTick; x <= maxX; x += tickInterval) {
+                const canvasX = positionToCanvasX(x);
+                
+                // 确保刻度在画布内
+                if (canvasX >= 50 && canvasX <= width - 50) {
+                    ctx.beginPath();
+                    ctx.moveTo(canvasX, height/2 - 5);
+                    ctx.lineTo(canvasX, height/2 + 5);
+                    ctx.stroke();
+                    
+                    // 显示刻度值（格式化大数字）
+                    let displayText = x.toString();
+                    if (Math.abs(x) >= 1000) {
+                        displayText = (x / 1000).toFixed(1) + 'k';
+                    }
+                    
+                    ctx.fillText(displayText, canvasX, height/2 + 10);
+                }
             }
             
             // 标签
@@ -2711,15 +3278,20 @@
             // 时间刻度
             ctx.font = '12px Arial';
             ctx.fillStyle = '#95a5a6';
-            ctx.textAlign = 'center';
             
-            for (let i = 0; i <= maxT; i += Math.ceil(maxT/10)) {
-                const x = 50 + (i / maxT) * (width - 100);
+            let timeTickInterval = 2;
+            if (maxT > 50) timeTickInterval = 10;
+            else if (maxT > 20) timeTickInterval = 5;
+            else if (maxT > 10) timeTickInterval = 2;
+            else timeTickInterval = 1;
+            
+            for (let t = 0; t <= maxT; t += timeTickInterval) {
+                const canvasX = 50 + (t / maxT) * (width - 100);
                 ctx.beginPath();
-                ctx.moveTo(x, 25);
-                ctx.lineTo(x, 35);
+                ctx.moveTo(canvasX, 25);
+                ctx.lineTo(canvasX, 35);
                 ctx.stroke();
-                ctx.fillText(i.toString(), x, 40);
+                ctx.fillText(t.toString(), canvasX, 40);
             }
             
             // 时间标签
@@ -2728,11 +3300,12 @@
         
         // 绘制物体
         function drawObject(x, y, color, label, velocity, isMoving) {
-            const scaledX = 50 + (x + 50) * (canvas.width - 100) / 200;
+            const scaledX = positionToCanvasX(x);
             
             // 车身
             ctx.beginPath();
-            ctx.rect(scaledX - 15, y - 10, 30, 20);
+            const carWidth = Math.max(20, Math.min(30, 30 * (200 / (getViewRange().maxX - getViewRange().minX))));
+            ctx.rect(scaledX - carWidth/2, y - 10, carWidth, 20);
             ctx.fillStyle = color;
             ctx.fill();
             ctx.strokeStyle = '#2c3e50';
@@ -2740,9 +3313,10 @@
             ctx.stroke();
             
             // 车轮
+            const wheelSize = Math.max(3, Math.min(5, 5 * (200 / (getViewRange().maxX - getViewRange().minX))));
             ctx.beginPath();
-            ctx.arc(scaledX - 8, y + 10, 5, 0, Math.PI * 2);
-            ctx.arc(scaledX + 8, y + 10, 5, 0, Math.PI * 2);
+            ctx.arc(scaledX - carWidth/4, y + 10, wheelSize, 0, Math.PI * 2);
+            ctx.arc(scaledX + carWidth/4, y + 10, wheelSize, 0, Math.PI * 2);
             ctx.fillStyle = '#2c3e50';
             ctx.fill();
             
@@ -2786,22 +3360,22 @@
                 
                 // 左灯
                 ctx.beginPath();
-                ctx.arc(scaledX - 12, y + 5, 3, 0, Math.PI * 2);
+                ctx.arc(scaledX - carWidth/3, y + 5, 3, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // 右灯
                 ctx.beginPath();
-                ctx.arc(scaledX + 12, y + 5, 3, 0, Math.PI * 2);
+                ctx.arc(scaledX + carWidth/3, y + 5, 3, 0, Math.PI * 2);
                 ctx.fill();
                 
                 // 闪烁效果
                 if (Math.floor(Date.now() / 200) % 2 === 0) {
                     ctx.globalAlpha = 0.7;
                     ctx.beginPath();
-                    ctx.arc(scaledX - 12, y + 5, 5, 0, Math.PI * 2);
+                    ctx.arc(scaledX - carWidth/3, y + 5, 5, 0, Math.PI * 2);
                     ctx.fill();
                     ctx.beginPath();
-                    ctx.arc(scaledX + 12, y + 5, 5, 0, Math.PI * 2);
+                    ctx.arc(scaledX + carWidth/3, y + 5, 5, 0, Math.PI * 2);
                     ctx.fill();
                 }
                 ctx.restore();
@@ -2831,14 +3405,20 @@
             // 位置值
             ctx.font = '14px Arial';
             ctx.fillStyle = color;
-            ctx.fillText(`x=${x.toFixed(2)}`, scaledX, canvas.height - 15);
+            
+            let positionText = `x=${x.toFixed(2)}`;
+            if (Math.abs(x) >= 1000) {
+                positionText = `x=${(x/1000).toFixed(2)}k`;
+            }
+            
+            ctx.fillText(positionText, scaledX, canvas.height - 15);
         }
         
         // 绘制停车位置
         function drawStopPosition(x, color, label) {
             const width = canvas.width;
             const height = canvas.height;
-            const scaledX = 50 + (x + 50) * (width - 100) / 200;
+            const scaledX = positionToCanvasX(x);
             
             ctx.beginPath();
             ctx.moveTo(scaledX, height/2 - 60);
@@ -2873,7 +3453,7 @@
             
             specialMoments.forEach(moment => {
                 const xA = calculatePosition('A', moment.time);
-                const scaledXA = 50 + (xA + 50) * (width - 100) / 200;
+                const scaledXA = positionToCanvasX(xA);
                 
                 // 计算时间标记位置（在时间轴上）
                 const timeX = 50 + (moment.time / maxT) * (width - 100);
@@ -2928,7 +3508,7 @@
             const step = maxT / 200; // 根据总时间调整步长
             for (let t = 0; t <= maxT; t += step) {
                 const x = calculatePosition('A', t);
-                const scaledX = 50 + (x + 50) * (width - 100) / 200;
+                const scaledX = positionToCanvasX(x);
                 const scaledY = height/2 - 30;
                 if (t === 0) ctx.moveTo(scaledX, scaledY);
                 else ctx.lineTo(scaledX, scaledY);
@@ -2941,7 +3521,7 @@
             ctx.beginPath();
             for (let t = 0; t <= maxT; t += step) {
                 const x = calculatePosition('B', t);
-                const scaledX = 50 + (x + 50) * (width - 100) / 200;
+                const scaledX = positionToCanvasX(x);
                 const scaledY = height/2 - 50;
                 if (t === 0) ctx.moveTo(scaledX, scaledY);
                 else ctx.lineTo(scaledX, scaledY);
@@ -2953,8 +3533,8 @@
         
         // 绘制距离线
         function drawDistanceLine(xA, xB, y) {
-            const scaledXA = 50 + (xA + 50) * (canvas.width - 100) / 200;
-            const scaledXB = 50 + (xB + 50) * (canvas.width - 100) / 200;
+            const scaledXA = positionToCanvasX(xA);
+            const scaledXB = positionToCanvasX(xB);
             const midX = (scaledXA + scaledXB) / 2;
             const distance = Math.abs(xA - xB);
             
@@ -2970,7 +3550,13 @@
             ctx.font = 'bold 14px Arial';
             ctx.fillStyle = '#2c3e50';
             ctx.textAlign = 'center';
-            ctx.fillText(`距离: ${distance.toFixed(2)} m`, midX, y - 40);
+            
+            let distanceText = `${distance.toFixed(2)} m`;
+            if (distance >= 1000) {
+                distanceText = `${(distance/1000).toFixed(2)} km`;
+            }
+            
+            ctx.fillText(`距离: ${distanceText}`, midX, y - 40);
         }
         
         // 绘制时间指示器
@@ -2993,6 +3579,79 @@
                 ctx.font = '14px Arial';
                 ctx.fillText(`过程 ${processInfo.processIndex + 1} (${processInfo.processOffset.toFixed(2)}/${multiProcesses[processInfo.processIndex].duration.toFixed(2)} s)`, 20, 105);
             }
+        }
+        
+        // 绘制比例尺
+        function drawScaleBar() {
+            if (!document.getElementById('showScaleIndicator').checked) {
+                return;
+            }
+            
+            const range = getViewRange();
+            const rangeWidth = range.maxX - range.minX;
+            const width = canvas.width;
+            const height = canvas.height;
+            
+            // 计算合适的比例尺长度（像素）
+            const canvasWidth = width - 100; // 减去边距
+            let targetMeters = 100; // 默认目标显示100米
+            
+            // 根据范围调整比例尺长度
+            if (rangeWidth > 1000) targetMeters = 500;
+            if (rangeWidth > 5000) targetMeters = 1000;
+            if (rangeWidth > 10000) targetMeters = 2000;
+            if (rangeWidth > 20000) targetMeters = 5000;
+            
+            // 确保比例尺不会太长
+            targetMeters = Math.min(targetMeters, rangeWidth * 0.3);
+            
+            // 计算像素长度
+            const pixelLength = (targetMeters / rangeWidth) * canvasWidth;
+            
+            // 确保比例尺不会太短
+            if (pixelLength < 50) {
+                targetMeters = (50 / canvasWidth) * rangeWidth;
+            }
+            
+            // 绘制比例尺背景
+            const scaleX = width - pixelLength - 60;
+            const scaleY = height - 40;
+            
+            ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+            ctx.fillRect(scaleX - 5, scaleY - 5, pixelLength + 10, 30);
+            ctx.strokeStyle = '#7f8c8d';
+            ctx.lineWidth = 1;
+            ctx.strokeRect(scaleX - 5, scaleY - 5, pixelLength + 10, 30);
+            
+            // 绘制比例尺
+            ctx.beginPath();
+            ctx.moveTo(scaleX, scaleY + 10);
+            ctx.lineTo(scaleX + pixelLength, scaleY + 10);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 3;
+            ctx.stroke();
+            
+            // 刻度
+            ctx.beginPath();
+            ctx.moveTo(scaleX, scaleY);
+            ctx.lineTo(scaleX, scaleY + 20);
+            ctx.moveTo(scaleX + pixelLength, scaleY);
+            ctx.lineTo(scaleX + pixelLength, scaleY + 20);
+            ctx.strokeStyle = '#2c3e50';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+            
+            // 标注
+            ctx.font = '12px Arial';
+            ctx.fillStyle = '#2c3e50';
+            ctx.textAlign = 'center';
+            
+            let scaleText = `${targetMeters.toFixed(0)} m`;
+            if (targetMeters >= 1000) {
+                scaleText = `${(targetMeters / 1000).toFixed(1)} km`;
+            }
+            
+            ctx.fillText(scaleText, scaleX + pixelLength/2, scaleY + 25);
         }
         
         // ==================== 图表函数 ====================
@@ -3311,11 +3970,14 @@
                 v0B: 5,
                 aB: 0,
                 t: 0,
-                maxT: 20
+                maxT: 50
             };
             
             // 重置多过程
             resetMultiProcess();
+            
+            // 重置视图控制
+            resetView();
             
             // 重置复选框
             brakeA.checked = false;
@@ -3326,6 +3988,7 @@
             document.getElementById('showStopPosition').checked = true;
             document.getElementById('showBrakeLight').checked = true;
             document.getElementById('showProcessMarkers').checked = true;
+            document.getElementById('showScaleIndicator').checked = true;
             
             // 更新控件
             updateInputsAndSliders();
@@ -3382,9 +4045,9 @@
             
             // 限制范围
             if (param.startsWith('x0')) {
-                singleParams[param] = Math.max(-50, Math.min(100, singleParams[param]));
+                singleParams[param] = Math.max(-200, Math.min(400, singleParams[param]));
             } else if (param.startsWith('v0')) {
-                singleParams[param] = Math.max(0, Math.min(30, singleParams[param]));
+                singleParams[param] = Math.max(0, Math.min(50, singleParams[param]));
             } else if (param.startsWith('a')) {
                 singleParams[param] = Math.max(-5, Math.min(5, singleParams[param]));
             } else if (param === 't') {
@@ -3413,7 +4076,7 @@
             const process = multiProcesses[currentProcessIndex];
             
             if (param === 'duration') {
-                process.duration = Math.max(1, Math.min(20, process.duration + delta));
+                process.duration = Math.max(1, Math.min(30, process.duration + delta));
                 multiInputs.duration.value = process.duration.toFixed(1);
                 multiSliders.duration.value = process.duration;
             } else if (param === 'x0A' || param === 'x0B') {
@@ -3422,7 +4085,7 @@
                     process.params[param] += delta;
                     
                     // 限制范围
-                    process.params[param] = Math.max(-50, Math.min(100, process.params[param]));
+                    process.params[param] = Math.max(-200, Math.min(400, process.params[param]));
                     
                     // 更新控件
                     multiInputs[param].value = process.params[param].toFixed(1);
@@ -3433,7 +4096,7 @@
                 
                 // 限制范围
                 if (param.startsWith('v0')) {
-                    process.params[param] = Math.max(0, Math.min(30, process.params[param]));
+                    process.params[param] = Math.max(0, Math.min(50, process.params[param]));
                 } else if (param.startsWith('a')) {
                     process.params[param] = Math.max(-5, Math.min(5, process.params[param]));
                 }
@@ -3463,12 +4126,12 @@
             
             if (currentMode === 'single') {
                 // 随机参数
-                singleParams.x0A = Math.floor(Math.random() * 50) - 10;
-                singleParams.v0A = 5 + Math.random() * 15;
+                singleParams.x0A = Math.floor(Math.random() * 200) - 100; // -100到100
+                singleParams.v0A = 5 + Math.random() * 20; // 5到25
                 singleParams.aA = (Math.random() > 0.5 ? 1 : -1) * Math.random() * 3;
                 
-                singleParams.x0B = singleParams.x0A + 20 + Math.random() * 30;
-                singleParams.v0B = Math.max(1, singleParams.v0A - 5 + Math.random() * 10);
+                singleParams.x0B = singleParams.x0A + 20 + Math.random() * 100; // 在A后面20-120米
+                singleParams.v0B = Math.max(1, singleParams.v0A - 5 + Math.random() * 15);
                 singleParams.aB = (Math.random() > 0.5 ? 1 : -1) * Math.random() * 2;
                 
                 // 随机刹车
@@ -3483,13 +4146,13 @@
                     if (i === 0) {
                         // 过程1：包含初始位置
                         multiProcesses.push({
-                            duration: 3 + Math.random() * 7, // 3-10秒
+                            duration: 5 + Math.random() * 10, // 5-15秒
                             params: {
-                                x0A: Math.floor(Math.random() * 50) - 10,
-                                x0B: Math.floor(Math.random() * 50) + 20,
-                                v0A: 5 + Math.random() * 15,
+                                x0A: Math.floor(Math.random() * 200) - 100,
+                                x0B: Math.floor(Math.random() * 200) + 50,
+                                v0A: 5 + Math.random() * 20,
                                 aA: (Math.random() > 0.5 ? 1 : -1) * Math.random() * 2,
-                                v0B: Math.max(1, 5 + Math.random() * 10),
+                                v0B: Math.max(1, 5 + Math.random() * 15),
                                 aB: (Math.random() > 0.5 ? 1 : -1) * Math.random() * 1.5,
                                 brakeA: Math.random() > 0.7,
                                 brakeB: Math.random() > 0.7
@@ -3499,7 +4162,7 @@
                         // 后续过程：不包含初始位置
                         const lastProcess = multiProcesses[i-1];
                         multiProcesses.push({
-                            duration: 3 + Math.random() * 7, // 3-10秒
+                            duration: 5 + Math.random() * 10, // 5-15秒
                             params: {
                                 x0A: null,
                                 x0B: null,
@@ -3521,6 +4184,9 @@
             
             // 重置时间
             singleParams.t = 0;
+            
+            // 重置视图
+            zoomToFit();
             
             // 更新控件
             updateInputsAndSliders();
@@ -3578,6 +4244,14 @@
                     singleParams.x0B = 80; singleParams.v0B = 15; singleParams.aB = 0;
                     brakeA.checked = true; brakeB.checked = false;
                     break;
+                case 'largeDisplacement': // 大位移演示
+                    singleParams.x0A = 0; singleParams.v0A = 40; singleParams.aA = 0;
+                    singleParams.x0B = 500; singleParams.v0B = 10; singleParams.aB = 0;
+                    brakeA.checked = false; brakeB.checked = false;
+                    singleParams.maxT = 30;
+                    viewMode = 'largeDisplacement';
+                    viewRangeSelect.value = 'largeDisplacement';
+                    break;
                 case 'multiProcessDemo': // 多过程演示
                     switchMode('multi');
                     multiProcesses = [
@@ -3624,6 +4298,7 @@
                     updateProcessTabs();
                     switchProcess(0);
                     calculateProcessStates();
+                    zoomToFit();
                     break;
             }
             
@@ -3771,6 +4446,19 @@
             toStartBtn.addEventListener('click', backToStart);
             randomBtn.addEventListener('click', randomGenerate);
             
+            // 视图控制按钮事件
+            zoomInBtn.addEventListener('click', zoomIn);
+            zoomOutBtn.addEventListener('click', zoomOut);
+            zoomFitBtn.addEventListener('click', zoomToFit);
+            resetViewBtn.addEventListener('click', resetView);
+            
+            // 视图模式选择
+            viewRangeSelect.addEventListener('change', function() {
+                viewMode = this.value;
+                drawMotion();
+                updateViewInfo();
+            });
+            
             // 复选框事件
             brakeA.addEventListener('change', () => {
                 calculateSpecialMoments();
@@ -3789,6 +4477,115 @@
             document.getElementById('showStopPosition').addEventListener('change', drawMotion);
             document.getElementById('showBrakeLight').addEventListener('change', drawMotion);
             document.getElementById('showProcessMarkers').addEventListener('change', drawMotion);
+            document.getElementById('showScaleIndicator').addEventListener('change', drawMotion);
+            
+            // ==================== 鼠标交互事件 ====================
+            
+            // 鼠标滚轮缩放
+            canvas.addEventListener('wheel', function(e) {
+                e.preventDefault();
+                
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mousePosition = canvasXToPosition(mouseX);
+                
+                // 计算缩放中心
+                const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
+                const oldZoom = zoomLevel;
+                zoomLevel *= zoomFactor;
+                zoomLevel = Math.max(0.05, Math.min(zoomLevel, 20));
+                
+                // 调整视图中心，使鼠标位置保持不变
+                const zoomRatio = oldZoom / zoomLevel;
+                viewCenter = mousePosition - (mousePosition - viewCenter) * zoomRatio;
+                
+                // 更新显示模式
+                if (viewMode !== 'followCurrent') {
+                    viewMode = 'followCurrent';
+                    viewRangeSelect.value = 'followCurrent';
+                }
+                
+                drawMotion();
+                updateViewInfo();
+            });
+            
+            // 鼠标拖拽平移
+            canvas.addEventListener('mousedown', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                // 检查是否在画布的主要区域（排除按钮等）
+                if (mouseY > 80 && mouseY < canvas.height - 30) {
+                    isDragging = true;
+                    lastMouseX = mouseX;
+                    lastMouseY = mouseY;
+                    canvas.style.cursor = 'grabbing';
+                }
+            });
+            
+            canvas.addEventListener('mousemove', function(e) {
+                if (!isDragging) return;
+                
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const deltaX = mouseX - lastMouseX;
+                
+                // 计算平移距离
+                const range = getViewRange();
+                const rangeWidth = range.maxX - range.minX;
+                const deltaPos = (deltaX / (canvas.width - 100)) * rangeWidth;
+                
+                viewCenter -= deltaPos;
+                lastMouseX = mouseX;
+                
+                // 更新显示模式
+                if (viewMode !== 'followCurrent') {
+                    viewMode = 'followCurrent';
+                    viewRangeSelect.value = 'followCurrent';
+                }
+                
+                drawMotion();
+                updateViewInfo();
+            });
+            
+            canvas.addEventListener('mouseup', function() {
+                isDragging = false;
+                canvas.style.cursor = 'grab';
+            });
+            
+            canvas.addEventListener('mouseleave', function() {
+                isDragging = false;
+                canvas.style.cursor = 'grab';
+            });
+            
+            // 双击居中显示物体
+            canvas.addEventListener('dblclick', function(e) {
+                const rect = canvas.getBoundingClientRect();
+                const mouseX = e.clientX - rect.left;
+                const mouseY = e.clientY - rect.top;
+                
+                // 检查点击位置
+                const width = canvas.width;
+                const height = canvas.height;
+                
+                // 计算点击位置对应的物体
+                const t = currentMode === 'single' ? singleParams.t : singleParams.t;
+                const xA = calculatePosition('A', t);
+                const xB = calculatePosition('B', t);
+                
+                const scaledXA = positionToCanvasX(xA);
+                const scaledXB = positionToCanvasX(xB);
+                
+                // 检查是否点击了A车
+                if (Math.abs(mouseX - scaledXA) < 30 && Math.abs(mouseY - height/2) < 20) {
+                    centerOnObject('A');
+                }
+                // 检查是否点击了B车
+                else if (Math.abs(mouseX - scaledXB) < 30 && Math.abs(mouseY - height/2) < 20) {
+                    centerOnObject('B');
+                }
+            });
             
             // 窗口大小变化
             window.addEventListener('resize', () => {
